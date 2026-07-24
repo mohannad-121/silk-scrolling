@@ -13,6 +13,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { SalonConcierge } from "@/components/salon-concierge";
 
 function NotFoundComponent() {
   return (
@@ -80,10 +81,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "ÉLAN Nail & Spa — Where Beauty Becomes an Experience" },
-      { name: "description", content: "A luxury destination for manicure, pedicure, nail art, and spa. Book with our specialists at ÉLAN — an editorial beauty experience." },
+      {
+        name: "description",
+        content:
+          "A luxury destination for manicure, pedicure, nail art, laser and spa. Book with our specialists at ÉLAN — an editorial beauty experience.",
+      },
       { name: "author", content: "ÉLAN Nail & Spa" },
       { property: "og:title", content: "ÉLAN Nail & Spa — Where Beauty Becomes an Experience" },
-      { property: "og:description", content: "Cinematic luxury nail, pedicure and spa destination. Book your ÉLAN experience." },
+      {
+        property: "og:description",
+        content:
+          "Cinematic luxury nail, pedicure, laser and spa destination. Book your ÉLAN experience.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -95,7 +104,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -125,6 +137,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <SmoothScroll>
         <SiteChrome />
+        <SalonConcierge />
       </SmoothScroll>
     </QueryClientProvider>
   );
@@ -132,7 +145,9 @@ function RootComponent() {
 
 function SiteChrome() {
   const [scrolled, setScrolled] = useState(false);
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const pathname = useRouterState({
+    select: (s: { location: { pathname: string } }) => s.location.pathname,
+  });
   const isHome = pathname === "/";
 
   useEffect(() => {
@@ -157,9 +172,7 @@ function SiteChrome() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-          solid
-            ? "bg-background/85 backdrop-blur-xl border-b border-border/60"
-            : "bg-transparent"
+          solid ? "bg-background/85 backdrop-blur-xl border-b border-border/60" : "bg-transparent"
         }`}
       >
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-10 md:py-5">
@@ -186,9 +199,7 @@ function SiteChrome() {
                 key={item.to}
                 to={item.to}
                 className={`text-[11px] uppercase tracking-[0.28em] transition-colors ${
-                  solid
-                    ? "text-foreground/75 hover:text-primary"
-                    : "text-white/80 hover:text-white"
+                  solid ? "text-foreground/75 hover:text-primary" : "text-white/80 hover:text-white"
                 }`}
               >
                 {item.label}
@@ -222,7 +233,7 @@ function SiteChrome() {
         <Outlet />
       </main>
 
-      <SiteFooter />
+      {!isHome && <SiteFooter />}
 
       {/* Persistent mobile CTA */}
       <Link
@@ -242,8 +253,8 @@ function SiteFooter() {
         <div className="md:col-span-2">
           <div className="font-serif text-4xl tracking-[0.2em]">ÉLAN</div>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-ivory/70">
-            An editorial beauty destination — nails, pedicure and spa —
-            designed as an experience, not an appointment.
+            An editorial beauty destination — nails, pedicure and spa — designed as an experience,
+            not an appointment.
           </p>
           <p className="eyebrow mt-8 text-ivory/50">Book by phone</p>
           <p className="mt-2 font-serif text-2xl">+971 4 000 0000</p>
@@ -251,7 +262,8 @@ function SiteFooter() {
         <div>
           <p className="eyebrow text-ivory/50">Visit</p>
           <p className="mt-3 text-sm leading-relaxed text-ivory/80">
-            The Avenue, 12 Rose Court<br />
+            The Avenue, 12 Rose Court
+            <br />
             Downtown · Open daily 10 — 22
           </p>
         </div>
