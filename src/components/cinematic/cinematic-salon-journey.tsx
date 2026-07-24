@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+
 import { useI18n } from "@/i18n/salon-i18n";
 import { useSalonData } from "@/lib/salon-data";
+
 import {
-  cinematicScenes,
+  cinematicRooms,
   firstCinematicAssets,
-  type CinematicSceneConfig,
+  type CinematicRoomConfig,
 } from "./cinematic-scene-config";
 import { useCinematicTimeline } from "./use-cinematic-timeline";
 
@@ -29,40 +31,60 @@ function useCinematicLoader() {
   }, []);
   return progress;
 }
-function SceneLayer({ scene }: { scene: CinematicSceneConfig }) {
+
+function CinematicRoom({ room }: { room: CinematicRoomConfig }) {
   return (
-    <article className={`cinematic-scene scene--${scene.id}`} aria-label={scene.alt}>
+    <article className={`cinematic-room room--${room.id}`} aria-label={room.alt}>
       <img
-        className="cinematic-image"
-        src={scene.image}
-        alt={scene.alt}
-        style={{ objectPosition: scene.focal }}
-        loading={scene.id === "street" ? "eager" : "lazy"}
+        className="cinematic-room__image"
+        src={room.image}
+        alt={room.alt}
+        style={{ objectPosition: room.focal }}
+        loading={room.id === "street" ? "eager" : "lazy"}
       />
-      <div className="cinematic-scene-shade" />
+      <div className="cinematic-room__shade" />
     </article>
   );
 }
+
+function RoomPortal({ name }: { name: string }) {
+  return (
+    <div className={`cinematic-portal portal--${name}`} aria-hidden="true">
+      {name === "glass" && (
+        <>
+          <i className="portal-door portal-door--left" />
+          <i className="portal-door portal-door--right" />
+        </>
+      )}
+      {name === "curtain" && (
+        <>
+          <i className="portal-curtain portal-curtain--left" />
+          <i className="portal-curtain portal-curtain--right" />
+        </>
+      )}
+    </div>
+  );
+}
+
 function ServiceRail({ categoryIds }: { categoryIds: string[] }) {
   const { services } = useSalonData();
   const { formatCurrency, t, text } = useI18n();
   const choices = services
-    .filter((item) => item.enabled && categoryIds.includes(item.categoryId))
-    .slice(0, 4);
+    .filter((service) => service.enabled && categoryIds.includes(service.categoryId))
+    .slice(0, 3);
   return (
     <aside className="cinematic-service-rail" aria-label={t("home.selectRitual")}>
       <span className="cinematic-mini-label">{t("home.selectRitual")}</span>
-      <div>
-        {choices.map((item) => (
-          <a href={`/book?service=${item.id}`} key={item.id} className="cinematic-service-link">
-            <span>{text(item, "name")}</span>
-            <span>{formatCurrency(item.price)}</span>
-          </a>
-        ))}
-      </div>
+      {choices.map((service) => (
+        <a href={`/book?service=${service.id}`} key={service.id} className="cinematic-service-link">
+          <span>{text(service, "name")}</span>
+          <span>{formatCurrency(service.price)}</span>
+        </a>
+      ))}
     </aside>
   );
 }
+
 function SceneCopy({
   className,
   eyebrow,
@@ -70,49 +92,53 @@ function SceneCopy({
 }: {
   className: string;
   eyebrow: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <div className={`${className} cinematic-scene-copy`}>
+    <div className={`cinematic-scene-copy ${className}`}>
       <span className="eyebrow text-champagne">{eyebrow}</span>
       {children}
     </div>
   );
 }
+
 export function CinematicSalonJourney() {
   const journeyRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const progress = useCinematicLoader();
   const { t } = useI18n();
   useCinematicTimeline(journeyRef, stageRef);
+
   return (
     <section
       ref={journeyRef}
-      className="cinematic-journey grain"
-      aria-label="ELAN cinematic journey"
+      className="cinematic-journey cinematic-walkthrough grain"
+      aria-label="ELAN cinematic walkthrough"
     >
-      <div ref={stageRef} className="cinematic-stage">
-        {cinematicScenes.map((scene) => (
-          <SceneLayer scene={scene} key={scene.id} />
+      <div ref={stageRef} className="cinematic-stage cinematic-walkthrough__stage">
+        {cinematicRooms.map((room) => (
+          <CinematicRoom room={room} key={room.id} />
         ))}
+
         <div className="cinematic-street-left" aria-hidden="true">
-          <span>Maison No. 11</span>
+          <span>Rue des Fleurs</span>
         </div>
         <div className="cinematic-street-right" aria-hidden="true">
-          <span>Atelier du Parfum</span>
+          <span>Maison de Soin</span>
         </div>
-        <div className="cinematic-doorway" aria-hidden="true">
-          <div className="cinematic-door cinematic-door-left" />
-          <div className="cinematic-door cinematic-door-right" />
-        </div>
-        <div className="cinematic-arch-mask" aria-hidden="true" />
-        <div className="cinematic-reveal-mask" aria-hidden="true" />
-        <div className="cinematic-curtain-mask" aria-hidden="true" />
-        <div className="cinematic-laser-mask" aria-hidden="true" />
-        <div className="cinematic-water-mask" aria-hidden="true" />
-        <div className="cinematic-steam" aria-hidden="true" />
-        <div className="cinematic-water" aria-hidden="true" />
-        <div className="cinematic-intro">
+        <div className="cinematic-pavement-glow" aria-hidden="true" />
+        <RoomPortal name="street" />
+        <RoomPortal name="glass" />
+        <RoomPortal name="reception" />
+        <RoomPortal name="manicure" />
+        <RoomPortal name="nail" />
+        <RoomPortal name="curtain" />
+        <RoomPortal name="water" />
+        <RoomPortal name="massage" />
+        <div className="cinematic-steam cinematic-steam--spa" aria-hidden="true" />
+        <div className="cinematic-water cinematic-water--spa" aria-hidden="true" />
+
+        <div className="cinematic-intro cinematic-intro--walkthrough">
           <span className="eyebrow text-white/70">{t("home.eyebrow")}</span>
           <h1>{t("home.title")}</h1>
           <p>{t("home.follow")}</p>
@@ -120,6 +146,7 @@ export function CinematicSalonJourney() {
             {t("home.begin")} <span>↓</span>
           </a>
         </div>
+
         <SceneCopy className="cinematic-reception-copy" eyebrow={t("home.reception")}>
           <p>{t("home.receptionCopy")}</p>
         </SceneCopy>
@@ -133,28 +160,25 @@ export function CinematicSalonJourney() {
             {t("home.bookLook")} <span>↗</span>
           </a>
         </SceneCopy>
-        <SceneCopy className="cinematic-pedicure-copy" eyebrow={t("home.pedicure")}>
-          <p>{t("home.pedicureCopy")}</p>
-          <ServiceRail categoryIds={["pedicure"]} />
-        </SceneCopy>
-        <SceneCopy className="cinematic-laser-copy" eyebrow={t("home.laser")}>
-          <p>{t("home.laserCopy")}</p>
-          <ServiceRail categoryIds={["laser"]} />
+        <SceneCopy className="cinematic-jacuzzi-copy" eyebrow={t("home.final")}>
+          <p>{t("home.finalCopy")}</p>
+          <ServiceRail categoryIds={["jacuzzi", "spa"]} />
         </SceneCopy>
         <div className="cinematic-final-copy cinematic-scene-copy">
-          <span className="eyebrow text-champagne">{t("home.final")}</span>
+          <span className="eyebrow text-champagne">{t("home.massage")}</span>
           <h2>{t("home.build")}</h2>
-          <p>{t("home.finalCopy")}</p>
-          <a href="/book?service=private-jacuzzi" className="cinematic-final-cta">
+          <p>{t("home.massageCopy")}</p>
+          <a href="/book?service=relaxation-massage" className="cinematic-final-cta">
             {t("home.reserveRitual")} <span>↗</span>
           </a>
         </div>
+
         <div className="cinematic-progress" aria-hidden="true">
           <span>{t("home.scroll")}</span>
           <div className="cinematic-progress-track">
             <i />
           </div>
-          <span>07</span>
+          <span>10</span>
         </div>
         <div id="journey-start" className="cinematic-anchor" />
         {progress < 100 && (

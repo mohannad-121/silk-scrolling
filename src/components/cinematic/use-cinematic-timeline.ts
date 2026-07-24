@@ -2,7 +2,11 @@ import { useLayoutEffect, type RefObject } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import { cinematicTiming } from "./cinematic-scene-config";
+
 gsap.registerPlugin(ScrollTrigger);
+
+const portalOpen = "inset(0% 0% 0% 0% round 0px)";
 
 export function useCinematicTimeline(
   journeyRef: RefObject<HTMLElement | null>,
@@ -20,131 +24,173 @@ export function useCinematicTimeline(
           trigger: journey,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.72,
+          scrub: 0.78,
           pin: stage,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => stage.style.setProperty("--journey-progress", String(self.progress)),
         },
       });
+
       timeline
         .to(
-          q(".scene--street .cinematic-image"),
-          { scale: 1.4, xPercent: -2, yPercent: -3, duration: 0.16 },
+          q(".room--street .cinematic-room__image"),
+          { scale: 1.32, yPercent: -2, duration: cinematicTiming.streetApproach },
           0,
         )
-        .to(q(".cinematic-street-left"), { xPercent: -34, duration: 0.16 }, 0)
-        .to(q(".cinematic-street-right"), { xPercent: 34, duration: 0.16 }, 0)
-        .to(q(".cinematic-intro"), { autoAlpha: 0, yPercent: -65, duration: 0.1 }, 0.09)
         .to(
-          q(".cinematic-doorway"),
-          { clipPath: "inset(0% 0% 0% 0% round 0px)", duration: 0.13, ease: "expo.inOut" },
-          0.15,
+          q(".cinematic-street-left"),
+          { xPercent: -40, duration: cinematicTiming.streetApproach },
+          0,
         )
         .to(
-          q(".scene--reception"),
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 0.13, ease: "expo.inOut" },
-          0.15,
-        )
-        .to(q(".cinematic-door-left"), { xPercent: -108, duration: 0.12, ease: "expo.inOut" }, 0.16)
-        .to(q(".cinematic-door-right"), { xPercent: 108, duration: 0.12, ease: "expo.inOut" }, 0.16)
-        .to(
-          q(".scene--reception .cinematic-image"),
-          { scale: 1.18, xPercent: 2, duration: 0.16 },
-          0.25,
-        )
-        .to(q(".cinematic-reception-copy"), { autoAlpha: 1, y: 0, duration: 0.06 }, 0.27)
-        .to(q(".cinematic-reception-copy"), { autoAlpha: 0, y: -18, duration: 0.06 }, 0.36)
-        .to(
-          q(".cinematic-arch-mask"),
-          { clipPath: "inset(0% 0% 0% 0% round 0px)", duration: 0.12, ease: "expo.inOut" },
-          0.35,
+          q(".cinematic-street-right"),
+          { xPercent: 40, duration: cinematicTiming.streetApproach },
+          0,
         )
         .to(
-          q(".scene--manicure"),
-          { clipPath: "inset(0% 0% 0% 0% round 0px)", duration: 0.12, ease: "expo.inOut" },
-          0.35,
+          q(".cinematic-pavement-glow"),
+          { opacity: 1, scale: 1.18, duration: cinematicTiming.streetApproach },
+          0,
+        )
+        .to(q(".cinematic-intro"), { autoAlpha: 0, yPercent: -55, duration: 0.06 }, 0.06)
+        .to(
+          q(".portal--street"),
+          { clipPath: portalOpen, duration: 0.08, ease: "expo.inOut" },
+          0.09,
+        )
+        .to(q(".room--approach"), { clipPath: portalOpen, duration: 0.08, ease: "expo.inOut" }, 0.1)
+        .to(
+          q(".room--approach .cinematic-room__image"),
+          { scale: 1.28, yPercent: -2, duration: 0.09 },
+          0.12,
+        )
+        .to(q(".portal--glass"), { clipPath: portalOpen, duration: 0.08, ease: "expo.inOut" }, 0.18)
+        .to(
+          q(".room--entrance"),
+          { clipPath: portalOpen, duration: 0.08, ease: "expo.inOut" },
+          cinematicTiming.mainEntrance,
+        )
+        .to(q(".portal-door--left"), { xPercent: -105, duration: 0.08, ease: "expo.inOut" }, 0.2)
+        .to(q(".portal-door--right"), { xPercent: 105, duration: 0.08, ease: "expo.inOut" }, 0.2)
+        .to(
+          q(".room--entrance .cinematic-room__image"),
+          { scale: 1.13, xPercent: 1, duration: 0.08 },
+          0.22,
+        )
+        .to(q(".cinematic-reception-copy"), { autoAlpha: 1, y: 0, duration: 0.045 }, 0.245)
+        .to(q(".cinematic-reception-copy"), { autoAlpha: 0, y: -16, duration: 0.04 }, 0.3)
+        .to(
+          q(".portal--reception"),
+          { clipPath: portalOpen, duration: 0.085, ease: "expo.inOut" },
+          0.275,
         )
         .to(
-          q(".scene--manicure .cinematic-image"),
-          { scale: 1.24, xPercent: -4, duration: 0.16 },
-          0.42,
+          q(".room--reception"),
+          { clipPath: portalOpen, duration: 0.085, ease: "expo.inOut" },
+          cinematicTiming.reception,
         )
-        .to(q(".cinematic-manicure-copy"), { autoAlpha: 1, y: 0, duration: 0.06 }, 0.45)
-        .to(q(".cinematic-manicure-copy"), { autoAlpha: 0, y: -16, duration: 0.06 }, 0.54)
         .to(
-          q(".cinematic-reveal-mask"),
-          { clipPath: "circle(78% at 54% 48%)", duration: 0.13, ease: "expo.inOut" },
+          q(".room--reception .cinematic-room__image"),
+          { scale: 1.25, xPercent: 3, duration: 0.1 },
+          0.31,
+        )
+        .to(
+          q(".portal--manicure"),
+          { clipPath: portalOpen, duration: 0.1, ease: "expo.inOut" },
+          0.385,
+        )
+        .to(
+          q(".room--manicure"),
+          { clipPath: portalOpen, duration: 0.1, ease: "expo.inOut" },
+          cinematicTiming.manicureEntry,
+        )
+        .to(
+          q(".room--manicure .cinematic-room__image"),
+          { scale: 1.18, xPercent: -2, duration: 0.09 },
+          0.43,
+        )
+        .to(q(".cinematic-manicure-copy"), { autoAlpha: 1, y: 0, duration: 0.04 }, 0.45)
+        .to(q(".cinematic-manicure-copy"), { autoAlpha: 0, y: -16, duration: 0.04 }, 0.49)
+        .to(
+          q(".portal--nail"),
+          { clipPath: "circle(78% at 52% 50%)", duration: 0.1, ease: "expo.inOut" },
+          0.49,
+        )
+        .to(
+          q(".room--artist"),
+          { clipPath: "circle(78% at 52% 50%)", duration: 0.1, ease: "expo.inOut" },
+          cinematicTiming.nailArtist,
+        )
+        .to(
+          q(".room--artist .cinematic-room__image"),
+          { scale: 1.25, xPercent: -2, duration: 0.08 },
           0.53,
         )
         .to(
-          q(".scene--look"),
-          { clipPath: "circle(78% at 54% 48%)", duration: 0.13, ease: "expo.inOut" },
-          0.53,
-        )
-        .to(q(".scene--look .cinematic-image"), { scale: 1.2, xPercent: 2, duration: 0.12 }, 0.59)
-        .to(q(".cinematic-look-copy"), { autoAlpha: 1, duration: 0.06 }, 0.6)
-        .to(q(".cinematic-look-copy"), { autoAlpha: 0, duration: 0.05 }, 0.68)
-        .to(
-          q(".cinematic-curtain-mask"),
-          { clipPath: "inset(0 0 0 0)", duration: 0.12, ease: "expo.inOut" },
-          0.67,
+          q(".room--nailReveal"),
+          { clipPath: "circle(78% at 52% 50%)", duration: 0.1, ease: "expo.inOut" },
+          cinematicTiming.nailReveal,
         )
         .to(
-          q(".scene--pedicure"),
-          { clipPath: "inset(0 0 0 0)", duration: 0.12, ease: "expo.inOut" },
-          0.67,
+          q(".room--nailReveal .cinematic-room__image"),
+          { scale: 1.22, xPercent: 2, duration: 0.08 },
+          0.63,
+        )
+        .to(q(".cinematic-look-copy"), { autoAlpha: 1, duration: 0.04 }, 0.64)
+        .to(q(".cinematic-look-copy"), { autoAlpha: 0, duration: 0.035 }, 0.68)
+        .to(
+          q(".portal--curtain"),
+          { clipPath: "inset(0 0 0 0)", duration: 0.09, ease: "expo.inOut" },
+          0.68,
         )
         .to(
-          q(".scene--pedicure .cinematic-image"),
-          { scale: 1.18, yPercent: -3, duration: 0.13 },
-          0.72,
+          q(".room--jacuzziEntry"),
+          { clipPath: "inset(0 0 0 0)", duration: 0.09, ease: "expo.inOut" },
+          cinematicTiming.jacuzziThreshold,
         )
-        .to(q(".cinematic-pedicure-copy"), { autoAlpha: 1, duration: 0.05 }, 0.73)
-        .to(q(".cinematic-pedicure-copy"), { autoAlpha: 0, duration: 0.04 }, 0.79)
+        .to(q(".room--jacuzziEntry .cinematic-room__image"), { scale: 1.17, duration: 0.08 }, 0.71)
+        .to(q(".portal-curtain--left"), { xPercent: -88, duration: 0.08, ease: "expo.inOut" }, 0.77)
+        .to(q(".portal-curtain--right"), { xPercent: 88, duration: 0.08, ease: "expo.inOut" }, 0.77)
         .to(
-          q(".cinematic-laser-mask"),
-          {
-            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-            duration: 0.11,
-            ease: "expo.inOut",
-          },
+          q(".portal--water"),
+          { clipPath: "ellipse(100% 100% at 52% 56%)", duration: 0.09, ease: "expo.inOut" },
           0.78,
         )
         .to(
-          q(".scene--laser"),
-          {
-            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-            duration: 0.11,
-            ease: "expo.inOut",
-          },
-          0.78,
+          q(".room--jacuzzi"),
+          { clipPath: "ellipse(100% 100% at 52% 56%)", duration: 0.09, ease: "expo.inOut" },
+          cinematicTiming.jacuzziEntry,
         )
         .to(
-          q(".scene--laser .cinematic-image"),
-          { scale: 1.15, xPercent: -2, duration: 0.12 },
-          0.81,
+          q(".room--jacuzzi .cinematic-room__image"),
+          { scale: 1.16, yPercent: -2, duration: 0.09 },
+          0.82,
         )
-        .to(q(".cinematic-steam"), { autoAlpha: 0.75, duration: 0.08 }, 0.82)
-        .to(q(".cinematic-laser-copy"), { autoAlpha: 1, duration: 0.05 }, 0.82)
-        .to(q(".cinematic-laser-copy"), { autoAlpha: 0, duration: 0.04 }, 0.87)
+        .to(q(".cinematic-steam--spa"), { autoAlpha: 0.72, duration: 0.08 }, 0.81)
+        .to(q(".cinematic-water--spa"), { autoAlpha: 0.82, duration: 0.09 }, 0.83)
+        .to(q(".cinematic-jacuzzi-copy"), { autoAlpha: 1, duration: 0.04 }, 0.84)
+        .to(q(".cinematic-jacuzzi-copy"), { autoAlpha: 0, duration: 0.035 }, 0.89)
         .to(
-          q(".cinematic-water-mask"),
-          { clipPath: "ellipse(100% 100% at 52% 58%)", duration: 0.12, ease: "expo.inOut" },
-          0.86,
-        )
-        .to(
-          q(".scene--jacuzzi"),
-          { clipPath: "ellipse(100% 100% at 52% 58%)", duration: 0.12, ease: "expo.inOut" },
-          0.86,
-        )
-        .to(
-          q(".scene--jacuzzi .cinematic-image"),
-          { scale: 1.14, yPercent: -2, duration: 0.13 },
+          q(".portal--massage"),
+          { clipPath: portalOpen, duration: 0.09, ease: "expo.inOut" },
           0.89,
         )
-        .to(q(".cinematic-water"), { autoAlpha: 0.78, duration: 0.11 }, 0.9)
-        .to(q(".cinematic-final-copy"), { autoAlpha: 1, y: 0, duration: 0.07 }, 0.93);
+        .to(
+          q(".room--massage"),
+          { clipPath: portalOpen, duration: 0.09, ease: "expo.inOut" },
+          cinematicTiming.massageEntry,
+        )
+        .to(
+          q(".room--massage .cinematic-room__image"),
+          { scale: 1.15, xPercent: 1, duration: 0.08 },
+          0.92,
+        )
+        .to(
+          q(".cinematic-final-copy"),
+          { autoAlpha: 1, y: 0, duration: 0.055 },
+          cinematicTiming.finalReserve,
+        );
     }, journey);
     return () => context.revert();
   }, [journeyRef, stageRef]);

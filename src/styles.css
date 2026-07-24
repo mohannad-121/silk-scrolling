@@ -1936,6 +1936,388 @@
     display: none !important;
   }
 }
+
+/* Final cascade overrides for the cinematic walkthrough. */
+.cinematic-journey.cinematic-walkthrough {
+  height: 1680vh;
+}
+
+@media (max-width: 1000px) {
+  .cinematic-journey.cinematic-walkthrough {
+    height: 1360vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .cinematic-journey.cinematic-walkthrough {
+    height: 980vh;
+  }
+
+  .cinematic-walkthrough .cinematic-final-copy {
+    top: 50%;
+  }
+
+  .cinematic-walkthrough .cinematic-final-copy h2 {
+    font-size: clamp(2.6rem, 12.5vw, 3.55rem);
+    line-height: 0.98;
+  }
+
+  .cinematic-walkthrough .cinematic-final-copy p {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-final-copy {
+    right: 1.35rem;
+    left: 1.35rem;
+    text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-journey.cinematic-walkthrough {
+    height: auto !important;
+  }
+}
+
+/* Room-by-room cinematic walkthrough: each new space is revealed through a physical aperture. */
+.cinematic-walkthrough {
+  height: 1680vh;
+  background: #120d0b;
+}
+.cinematic-walkthrough__stage {
+  background: #120d0b;
+}
+.cinematic-room {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  clip-path: inset(50% 50% 50% 50%);
+  background: #120d0b;
+  will-change: clip-path;
+}
+.cinematic-room__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.04);
+  will-change: transform;
+}
+.cinematic-room__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(12 6 5 / 0.48), transparent 49%, rgb(7 3 2 / 0.25)),
+    linear-gradient(0deg, rgb(9 4 3 / 0.52), transparent 48%);
+  pointer-events: none;
+}
+.room--street {
+  z-index: 1;
+  clip-path: inset(0);
+}
+.room--approach {
+  z-index: 2;
+  clip-path: inset(50% 50% 50% 50%);
+}
+.room--entrance {
+  z-index: 3;
+  clip-path: inset(50% 50% 50% 50% round 2rem);
+}
+.room--reception {
+  z-index: 4;
+  clip-path: inset(50% 50% 50% 50% round 3rem 3rem 1rem 1rem / 34% 34% 1rem 1rem);
+}
+.room--manicure {
+  z-index: 5;
+  clip-path: inset(50% 50% 50% 50% round 3rem 3rem 1rem 1rem / 34% 34% 1rem 1rem);
+}
+.room--artist,
+.room--nailReveal {
+  z-index: 6;
+  clip-path: circle(0% at 52% 50%);
+}
+.room--nailReveal {
+  z-index: 7;
+}
+.room--jacuzziEntry {
+  z-index: 8;
+  clip-path: inset(50% 50% 50% 50%);
+}
+.room--jacuzzi {
+  z-index: 9;
+  clip-path: ellipse(0% 0% at 52% 56%);
+}
+.room--massage {
+  z-index: 10;
+  clip-path: inset(50% 50% 50% 50% round 3rem 3rem 1rem 1rem / 34% 34% 1rem 1rem);
+}
+.cinematic-walkthrough .cinematic-street-left,
+.cinematic-walkthrough .cinematic-street-right {
+  z-index: 11;
+  width: 16%;
+  opacity: 0.72;
+}
+.cinematic-pavement-glow {
+  position: absolute;
+  z-index: 11;
+  inset: auto 0 0;
+  height: 48%;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 100%, rgb(229 169 80 / 0.24), transparent 62%);
+  mix-blend-mode: screen;
+}
+.cinematic-portal {
+  position: absolute;
+  z-index: 14;
+  inset: 0;
+  pointer-events: none;
+  clip-path: inset(50% 50% 50% 50%);
+  will-change: clip-path, transform;
+}
+.portal--street {
+  background: radial-gradient(
+    ellipse at 50% 52%,
+    transparent 0 24%,
+    rgb(10 4 3 / 0.24) 54%,
+    rgb(8 3 2 / 0.56) 100%
+  );
+}
+.portal--glass {
+  border: 2px solid rgb(238 193 118 / 0.42);
+  box-shadow:
+    inset 0 0 0 15px rgb(22 7 4 / 0.2),
+    0 0 80px rgb(255 202 121 / 0.18);
+}
+.portal-door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background:
+    linear-gradient(90deg, rgb(33 10 7 / 0.15), rgb(39 15 9 / 0.74)),
+    linear-gradient(90deg, transparent 48%, rgb(235 187 113 / 0.46) 49% 51%, transparent 52%);
+  box-shadow: inset 0 0 0 1px rgb(235 187 113 / 0.25);
+}
+.portal-door--left {
+  left: 0;
+}
+.portal-door--right {
+  right: 0;
+  transform: scaleX(-1);
+}
+.portal--reception,
+.portal--manicure,
+.portal--massage {
+  border: 2px solid rgb(235 190 118 / 0.42);
+  border-radius: 50% 50% 2.5rem 2.5rem / 28% 28% 2.5rem 2.5rem;
+  box-shadow:
+    inset 0 0 0 19px rgb(20 7 5 / 0.2),
+    0 0 90px rgb(245 190 117 / 0.12);
+}
+.portal--nail {
+  clip-path: circle(0% at 52% 50%);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 100vmax rgb(11 4 3 / 0.25);
+}
+.portal--curtain {
+  overflow: hidden;
+  background: linear-gradient(90deg, rgb(25 7 6 / 0.8), transparent 20% 80%, rgb(25 7 6 / 0.8));
+}
+.portal-curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: repeating-linear-gradient(
+    90deg,
+    rgb(38 7 10 / 0.98),
+    rgb(70 16 21 / 0.9) 8%,
+    rgb(28 5 8 / 0.96) 16%
+  );
+  box-shadow: 0 0 55px rgb(3 1 1 / 0.45);
+}
+.portal-curtain--left {
+  left: 0;
+}
+.portal-curtain--right {
+  right: 0;
+  transform: scaleX(-1);
+}
+.portal--water {
+  clip-path: ellipse(0% 0% at 52% 56%);
+  border: 1px solid rgb(235 193 119 / 0.36);
+  box-shadow: inset 0 0 85px rgb(255 206 130 / 0.2);
+}
+.cinematic-walkthrough .cinematic-steam--spa {
+  z-index: 16;
+  opacity: 0;
+}
+.cinematic-walkthrough .cinematic-water--spa {
+  z-index: 16;
+  opacity: 0;
+}
+.cinematic-walkthrough .cinematic-intro,
+.cinematic-walkthrough .cinematic-scene-copy {
+  z-index: 20;
+}
+.cinematic-walkthrough .cinematic-reception-copy {
+  left: auto;
+  right: clamp(1.5rem, 8vw, 9rem);
+  width: min(370px, calc(100% - 3rem));
+  text-align: right;
+}
+.cinematic-walkthrough .cinematic-manicure-copy {
+  top: 18%;
+}
+.cinematic-walkthrough .cinematic-look-copy {
+  left: auto;
+  right: clamp(1.5rem, 8vw, 9rem);
+  top: 56%;
+}
+.cinematic-jacuzzi-copy {
+  top: 19%;
+}
+.cinematic-walkthrough .cinematic-final-copy {
+  top: 55%;
+  width: min(480px, calc(100% - 3rem));
+}
+.cinematic-walkthrough .cinematic-final-copy h2 {
+  max-width: 11ch;
+}
+.cinematic-walkthrough .cinematic-progress {
+  z-index: 22;
+}
+.cinematic-walkthrough .cinematic-loader {
+  z-index: 30;
+}
+.cinematic-walkthrough .cinematic-service-link:focus-visible,
+.cinematic-walkthrough .cinematic-book-look:focus-visible,
+.cinematic-walkthrough .cinematic-final-cta:focus-visible,
+.cinematic-walkthrough .cinematic-quiet-link:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 5px;
+}
+
+@media (max-width: 1000px) {
+  .cinematic-walkthrough {
+    height: 1360vh;
+  }
+  .cinematic-walkthrough .cinematic-street-left,
+  .cinematic-walkthrough .cinematic-street-right {
+    width: 11%;
+  }
+  .cinematic-walkthrough .cinematic-intro {
+    left: 2rem;
+  }
+}
+@media (max-width: 640px) {
+  .cinematic-walkthrough {
+    height: 980vh;
+  }
+  .cinematic-walkthrough .cinematic-street-left,
+  .cinematic-walkthrough .cinematic-street-right {
+    display: none;
+  }
+  .cinematic-walkthrough .cinematic-intro {
+    left: 1.35rem;
+    width: calc(100% - 2.7rem);
+  }
+  .cinematic-walkthrough .cinematic-intro h1 {
+    font-size: clamp(3.2rem, 15vw, 4.7rem);
+  }
+  .cinematic-walkthrough .cinematic-scene-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    width: auto;
+  }
+  .cinematic-walkthrough .cinematic-reception-copy,
+  .cinematic-walkthrough .cinematic-look-copy {
+    right: 1.35rem;
+    text-align: left;
+  }
+  .cinematic-walkthrough .cinematic-service-rail {
+    display: none;
+  }
+  .cinematic-walkthrough .cinematic-final-copy {
+    top: 53%;
+  }
+  .cinematic-walkthrough .cinematic-progress {
+    left: 1.35rem;
+  }
+}
+html[dir="rtl"] .cinematic-walkthrough .cinematic-intro,
+html[dir="rtl"] .cinematic-walkthrough .cinematic-scene-copy {
+  left: auto;
+  right: clamp(1.5rem, 8vw, 9rem);
+  text-align: right;
+}
+html[dir="rtl"] .cinematic-walkthrough .cinematic-reception-copy,
+html[dir="rtl"] .cinematic-walkthrough .cinematic-look-copy {
+  right: auto;
+  left: clamp(1.5rem, 8vw, 9rem);
+  text-align: left;
+}
+html[dir="rtl"] .cinematic-walkthrough .cinematic-progress {
+  left: auto;
+  right: 2rem;
+}
+@media (max-width: 640px) {
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-intro,
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-scene-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    text-align: right;
+  }
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-reception-copy,
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-look-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    text-align: right;
+  }
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-progress {
+    left: auto;
+    right: 1.35rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-walkthrough {
+    height: auto !important;
+  }
+  .cinematic-walkthrough__stage {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .cinematic-walkthrough .cinematic-room {
+    position: relative;
+    display: block;
+    height: 68svh;
+    clip-path: none !important;
+  }
+  .cinematic-walkthrough .room--street {
+    height: 100svh;
+  }
+  .cinematic-walkthrough .cinematic-room__image {
+    transform: none !important;
+  }
+  .cinematic-walkthrough .cinematic-intro {
+    position: absolute;
+    top: 50svh;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-42%) !important;
+  }
+  .cinematic-walkthrough .cinematic-scene-copy,
+  .cinematic-walkthrough .cinematic-portal,
+  .cinematic-walkthrough .cinematic-steam--spa,
+  .cinematic-walkthrough .cinematic-water--spa,
+  .cinematic-walkthrough .cinematic-progress,
+  .cinematic-walkthrough .cinematic-loader,
+  .cinematic-walkthrough .cinematic-pavement-glow {
+    display: none !important;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1986,7 +2368,7 @@
 
 /* Continuous cinematic layers, portal transitions and Arabic direction support. */
 .cinematic-journey {
-  height: 1120vh;
+  height: 1680vh;
 }
 .cinematic-scene {
   z-index: 1;
