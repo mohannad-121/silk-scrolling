@@ -8,7 +8,8 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { Menu, X } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SmoothScroll } from "@/components/smooth-scroll";
@@ -118,6 +119,9 @@ function RootComponent() {
 }
 function SiteChrome() {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage, t } = useI18n();
   const pathname = useRouterState({
     select: (s: { location: { pathname: string } }) => s.location.pathname,
@@ -129,6 +133,22 @@ function SiteChrome() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    mobileMenuRef.current?.querySelector<HTMLElement>("a, button")?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
   const nav = [
     { to: "/services", label: t("nav.services") },
     { to: "/gallery", label: t("nav.gallery") },
@@ -137,38 +157,30 @@ function SiteChrome() {
     { to: "/about", label: t("nav.about") },
     { to: "/contact", label: t("nav.contact") },
   ] as const;
-  const solid = scrolled || !isHome;
+  const headerMode = isHome ? (scrolled ? "journey-scrolled" : "journey") : "page";
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${solid ? "border-b border-border/60 bg-background/85 backdrop-blur-xl" : "bg-transparent"}`}
-      >
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-10 md:py-5">
-          <Link to="/" className="group flex items-baseline gap-2">
-            <span
-              className={`font-serif text-2xl tracking-[0.25em] ${solid ? "text-foreground" : "text-white"}`}
-            >
-              ELAN
-            </span>
-            <span
-              className={`hidden text-[10px] uppercase tracking-[0.4em] sm:inline ${solid ? "text-muted-foreground" : "text-white/70"}`}
-            >
-              Nail · Spa
-            </span>
+      <header className={`site-header site-header--${headerMode}`}>
+        <div className="site-header__frame">
+          <Link to="/" className="salon-brand" aria-label="ELAN Nail & Spa">
+            <img
+              className="salon-brand__mark"
+              src="/brand/elan-monogram.svg"
+              alt=""
+              aria-hidden="true"
+            />
+            <span className="salon-brand__wordmark">ELAN</span>
+            <span className="salon-brand__descriptor">Nail · Spa</span>
           </Link>
-          <nav className="hidden items-center gap-8 lg:flex">
+          <nav className="site-header__links" aria-label={t("nav.primary")}>
             {nav.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`text-[11px] uppercase tracking-[0.22em] transition-colors ${solid ? "text-foreground/75 hover:text-primary" : "text-white/80 hover:text-white"}`}
-              >
+              <Link key={item.to} to={item.to} className="site-header__link">
                 {item.label}
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
-            <div className={`language-switch ${solid ? "is-solid" : ""}`} aria-label="Language">
+          <div className="site-header__actions">
+            <div className="language-switch site-header__language" aria-label={t("nav.language")}>
               <button onClick={() => setLanguage("en")} aria-pressed={language === "en"}>
                 EN
               </button>
@@ -177,14 +189,52 @@ function SiteChrome() {
                 ع
               </button>
             </div>
+            <Link to="/book" className="site-header__book">
+              {t("nav.book")}
+            </Link>
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="site-header__menu-toggle"
+              aria-label={mobileOpen ? t("nav.closeMenu") : t("nav.menu")}
+              aria-controls="site-mobile-menu"
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((open) => !open)}
+            >
+              {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+            </button>
+          </div>
+        </div>
+        {mobileOpen && (
+          <div
+            id="site-mobile-menu"
+            ref={mobileMenuRef}
+            className="site-header__mobile-menu"
+            role="dialog"
+            aria-modal="true"
+          >
+            <nav aria-label={t("nav.primary")}>
+              {nav.map((item, index) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="site-header__mobile-link"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <span>0{index + 1}</span>
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
             <Link
               to="/book"
-              className={`inline-flex items-center rounded-full border px-5 py-2.5 text-[11px] uppercase tracking-[0.22em] transition-all ${solid ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90" : "border-white/70 text-white hover:bg-white hover:text-primary"}`}
+              className="site-header__mobile-book"
+              onClick={() => setMobileOpen(false)}
             >
               {t("nav.book")}
             </Link>
           </div>
-        </div>
+        )}
       </header>
       <main>
         <Outlet />

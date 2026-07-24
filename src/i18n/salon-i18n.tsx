@@ -13,6 +13,10 @@ type Dictionary = Record<string, string>;
 
 const translations: Record<Language, Dictionary> = {
   en: {
+    "nav.menu": "Open menu",
+    "nav.closeMenu": "Close menu",
+    "nav.primary": "Primary navigation",
+    "nav.language": "Language",
     "nav.services": "Services",
     "nav.gallery": "Gallery",
     "nav.spa": "Spa",
@@ -181,6 +185,11 @@ const translations: Record<Language, Dictionary> = {
     "stub.specialists.body": "Full team directory with schedules and portfolios is next.",
   },
   ar: {
+    "nav.menu": "\u0641\u062a\u062d \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+    "nav.closeMenu": "\u0625\u063a\u0644\u0627\u0642 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+    "nav.primary":
+      "\u0627\u0644\u062a\u0646\u0642\u0644 \u0627\u0644\u0631\u0626\u064a\u0633\u064a",
+    "nav.language": "\u0627\u0644\u0644\u063a\u0629",
     "nav.services": "الخدمات",
     "nav.gallery": "المعرض",
     "nav.spa": "السبا",
