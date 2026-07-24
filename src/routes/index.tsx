@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef, useState } from "react";
 
 import exterior from "@/assets/scene-exterior.jpg";
@@ -51,7 +51,10 @@ function SceneExterior() {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "-15%"]);
   const textY = useTransform(scrollYProgress, [0, 0.6], ["0%", "-40%"]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const vignette = useTransform(scrollYProgress, [0, 1], [0.55, 0.9]);
+  const vignette = useTransform(
+    scrollYProgress,
+    (v) => `radial-gradient(ellipse at center, transparent 30%, rgba(20,10,8,${0.55 + v * 0.35}) 100%)`,
+  );
 
   return (
     <section ref={ref} className="relative h-[130vh]">
@@ -62,15 +65,7 @@ function SceneExterior() {
           className="absolute inset-0 h-full w-full object-cover"
           style={{ scale, y }}
         />
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            background: useTransform(
-              vignette,
-              (v) => `radial-gradient(ellipse at center, transparent 30%, rgba(20,10,8,${v}) 100%)`,
-            ),
-          }}
-        />
+        <motion.div className="absolute inset-0" style={{ background: vignette }} />
         <motion.div
           style={{ y: textY, opacity: textOpacity }}
           className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white"
@@ -240,7 +235,8 @@ function SceneManicure() {
 function SceneTransformation() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const clip = useTransform(scrollYProgress, [0.1, 0.9], ["100%", "0%"]);
+  const clipPath = useTransform(scrollYProgress, [0.1, 0.9], ["inset(0 100% 0 0)", "inset(0 0% 0 0)"]);
+  const dividerLeft = useTransform(scrollYProgress, [0.1, 0.9], ["0%", "100%"]);
   const headline = useTransform(scrollYProgress, [0, 0.3], [80, 0]);
 
   return (
@@ -255,13 +251,10 @@ function SceneTransformation() {
 
         <div className="relative aspect-[4/5] w-[min(90vw,600px)] overflow-hidden rounded-sm">
           <img src={manicure} alt="Before manicure" className="absolute inset-0 h-full w-full object-cover grayscale" />
-          <motion.div className="absolute inset-0 overflow-hidden" style={{ clipPath: useTransform(clip, (v) => `inset(0 ${v} 0 0)`) }}>
+          <motion.div className="absolute inset-0 overflow-hidden" style={{ clipPath }}>
             <img src={manicure} alt="After manicure" className="h-full w-full object-cover" />
           </motion.div>
-          <motion.div
-            className="absolute top-0 h-full w-px bg-champagne"
-            style={{ left: useTransform(clip, (v) => `calc(100% - ${v})`) }}
-          />
+          <motion.div className="absolute top-0 h-full w-px bg-champagne" style={{ left: dividerLeft }} />
         </div>
 
         <div className="absolute bottom-16 flex gap-8 text-xs uppercase tracking-[0.35em] text-ivory/60">
@@ -567,5 +560,3 @@ function SceneCTA() {
   );
 }
 
-// Suppress unused import lint (used for motion events elsewhere if extended).
-export const _mv = useMotionValueEvent;
