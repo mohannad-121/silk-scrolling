@@ -13,11 +13,5 @@ export const Route = createFileRoute("/about")({
       { property: "og:description", content: "Our story, our craft, our house." },
     ],
   }),
-  component: () => (
-    <StubPage
-      title="Our House"
-      tagline="About"
-      body="Founder story, philosophy, and press coverage will live here."
-    />
-  ),
+  component: () => <StubPage page="about" />,
 });

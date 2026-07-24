@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-
+import { useI18n } from "@/i18n/salon-i18n";
 import { useSalonData } from "@/lib/salon-data";
-
 import {
   cinematicScenes,
   firstCinematicAssets,
@@ -11,173 +10,156 @@ import { useCinematicTimeline } from "./use-cinematic-timeline";
 
 function useCinematicLoader() {
   const [progress, setProgress] = useState(0);
-
   useEffect(() => {
     let mounted = true;
     let loaded = 0;
-    const assets = firstCinematicAssets;
-    const complete = () => {
+    const done = () => {
       loaded += 1;
-      if (mounted) setProgress(Math.round((loaded / assets.length) * 100));
+      if (mounted) setProgress(Math.round((loaded / firstCinematicAssets.length) * 100));
     };
-    assets.forEach((source) => {
+    firstCinematicAssets.forEach((source) => {
       const image = new Image();
-      image.onload = complete;
-      image.onerror = complete;
+      image.onload = done;
+      image.onerror = done;
       image.src = source;
     });
     return () => {
       mounted = false;
     };
   }, []);
-
   return progress;
 }
-
-function CinematicScene({ scene }: { scene: CinematicSceneConfig }) {
+function SceneLayer({ scene }: { scene: CinematicSceneConfig }) {
   return (
-    <article className={`cinematic-scene scene--${scene.id}`} aria-label={scene.label}>
+    <article className={`cinematic-scene scene--${scene.id}`} aria-label={scene.alt}>
       <img
         className="cinematic-image"
         src={scene.image}
         alt={scene.alt}
+        style={{ objectPosition: scene.focal }}
         loading={scene.id === "street" ? "eager" : "lazy"}
       />
-      <div className={`cinematic-scene-shade cinematic-scene-shade--${scene.id}`} />
-      <div className="cinematic-scene-meta">
-        <span>{scene.label}</span>
-        <span>{scene.eyebrow}</span>
-      </div>
+      <div className="cinematic-scene-shade" />
     </article>
   );
 }
-
 function ServiceRail({ categoryIds }: { categoryIds: string[] }) {
   const { services } = useSalonData();
+  const { formatCurrency, t, text } = useI18n();
   const choices = services
-    .filter((service) => service.enabled && categoryIds.includes(service.categoryId))
+    .filter((item) => item.enabled && categoryIds.includes(item.categoryId))
     .slice(0, 4);
   return (
-    <aside className="cinematic-service-rail" aria-label="Featured services">
-      <span className="cinematic-mini-label">Select a ritual</span>
+    <aside className="cinematic-service-rail" aria-label={t("home.selectRitual")}>
+      <span className="cinematic-mini-label">{t("home.selectRitual")}</span>
       <div>
-        {choices.map((service) => (
-          <a
-            href={`/book?service=${service.id}`}
-            key={service.id}
-            className="cinematic-service-link"
-          >
-            <span>{service.name}</span>
-            <span>AED {service.price}</span>
+        {choices.map((item) => (
+          <a href={`/book?service=${item.id}`} key={item.id} className="cinematic-service-link">
+            <span>{text(item, "name")}</span>
+            <span>{formatCurrency(item.price)}</span>
           </a>
         ))}
       </div>
     </aside>
   );
 }
-
-function CinematicProgressIndicator() {
+function SceneCopy({
+  className,
+  eyebrow,
+  children,
+}: {
+  className: string;
+  eyebrow: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="cinematic-progress" aria-hidden="true">
-      <span>Scroll to enter</span>
-      <div className="cinematic-progress-track">
-        <i />
-      </div>
-      <span>07</span>
+    <div className={`${className} cinematic-scene-copy`}>
+      <span className="eyebrow text-champagne">{eyebrow}</span>
+      {children}
     </div>
   );
 }
-
 export function CinematicSalonJourney() {
   const journeyRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const progress = useCinematicLoader();
+  const { t } = useI18n();
   useCinematicTimeline(journeyRef, stageRef);
-
   return (
     <section
       ref={journeyRef}
       className="cinematic-journey grain"
-      aria-label="A cinematic tour through ÉLAN"
+      aria-label="ELAN cinematic journey"
     >
       <div ref={stageRef} className="cinematic-stage">
         {cinematicScenes.map((scene) => (
-          <CinematicScene key={scene.id} scene={scene} />
+          <SceneLayer scene={scene} key={scene.id} />
         ))}
-
         <div className="cinematic-street-left" aria-hidden="true">
           <span>Maison No. 11</span>
         </div>
         <div className="cinematic-street-right" aria-hidden="true">
           <span>Atelier du Parfum</span>
         </div>
-        <div className="cinematic-door-glow" aria-hidden="true" />
-        <div className="cinematic-door cinematic-door-left" aria-hidden="true" />
-        <div className="cinematic-door cinematic-door-right" aria-hidden="true" />
-        <div className="cinematic-arch" aria-hidden="true" />
-        <div className="cinematic-curtain" aria-hidden="true" />
+        <div className="cinematic-doorway" aria-hidden="true">
+          <div className="cinematic-door cinematic-door-left" />
+          <div className="cinematic-door cinematic-door-right" />
+        </div>
+        <div className="cinematic-arch-mask" aria-hidden="true" />
+        <div className="cinematic-reveal-mask" aria-hidden="true" />
+        <div className="cinematic-curtain-mask" aria-hidden="true" />
+        <div className="cinematic-laser-mask" aria-hidden="true" />
+        <div className="cinematic-water-mask" aria-hidden="true" />
         <div className="cinematic-steam" aria-hidden="true" />
         <div className="cinematic-water" aria-hidden="true" />
-
         <div className="cinematic-intro">
-          <span className="eyebrow text-white/70">ÉLAN Nail & Spa · The Avenue</span>
-          <h1>
-            Where beauty <em>becomes</em> an experience.
-          </h1>
-          <p>Follow the light beyond the salon door.</p>
+          <span className="eyebrow text-white/70">{t("home.eyebrow")}</span>
+          <h1>{t("home.title")}</h1>
+          <p>{t("home.follow")}</p>
           <a href="#journey-start" className="cinematic-quiet-link">
-            Begin the journey <span>↓</span>
+            {t("home.begin")} <span>↓</span>
           </a>
         </div>
-
-        <div className="cinematic-reception-copy cinematic-scene-copy">
-          <span className="eyebrow text-champagne">Reception</span>
-          <p>Welcome to your private beauty experience.</p>
-        </div>
-
-        <div className="cinematic-manicure-copy cinematic-scene-copy">
-          <span className="eyebrow text-champagne">The Atelier</span>
-          <p>Precision, considered down to the last detail.</p>
+        <SceneCopy className="cinematic-reception-copy" eyebrow={t("home.reception")}>
+          <p>{t("home.receptionCopy")}</p>
+        </SceneCopy>
+        <SceneCopy className="cinematic-manicure-copy" eyebrow={t("home.atelier")}>
+          <p>{t("home.atelierCopy")}</p>
           <ServiceRail categoryIds={["nails"]} />
-        </div>
-
-        <div className="cinematic-look-copy cinematic-scene-copy cinematic-look-copy">
-          <span className="eyebrow text-champagne">The Reveal</span>
-          <p>A hand-finished moment, made to be remembered.</p>
+        </SceneCopy>
+        <SceneCopy className="cinematic-look-copy" eyebrow={t("home.reveal")}>
+          <p>{t("home.revealCopy")}</p>
           <a className="cinematic-book-look" href="/book?service=nail-art&look=burgundy">
-            Book this look <span>↗</span>
+            {t("home.bookLook")} <span>↗</span>
           </a>
-        </div>
-
-        <div className="cinematic-pedicure-copy cinematic-scene-copy">
-          <span className="eyebrow text-champagne">Pedicure Lounge</span>
-          <p>Settle into a ritual with nowhere else to be.</p>
+        </SceneCopy>
+        <SceneCopy className="cinematic-pedicure-copy" eyebrow={t("home.pedicure")}>
+          <p>{t("home.pedicureCopy")}</p>
           <ServiceRail categoryIds={["pedicure"]} />
-        </div>
-
-        <div className="cinematic-laser-copy cinematic-scene-copy">
-          <span className="eyebrow text-champagne">Private Laser Suite</span>
-          <p>Advanced care in a beautifully calm space.</p>
+        </SceneCopy>
+        <SceneCopy className="cinematic-laser-copy" eyebrow={t("home.laser")}>
+          <p>{t("home.laserCopy")}</p>
           <ServiceRail categoryIds={["laser"]} />
-        </div>
-
+        </SceneCopy>
         <div className="cinematic-final-copy cinematic-scene-copy">
-          <span className="eyebrow text-champagne">The Private Suite</span>
-          <h2>
-            Build your <em>spa day.</em>
-          </h2>
-          <p>A private water ritual, at your pace.</p>
+          <span className="eyebrow text-champagne">{t("home.final")}</span>
+          <h2>{t("home.build")}</h2>
+          <p>{t("home.finalCopy")}</p>
           <a href="/book?service=private-jacuzzi" className="cinematic-final-cta">
-            Reserve your ritual <span>↗</span>
+            {t("home.reserveRitual")} <span>↗</span>
           </a>
         </div>
-
-        <CinematicProgressIndicator />
+        <div className="cinematic-progress" aria-hidden="true">
+          <span>{t("home.scroll")}</span>
+          <div className="cinematic-progress-track">
+            <i />
+          </div>
+          <span>07</span>
+        </div>
         <div id="journey-start" className="cinematic-anchor" />
-
         {progress < 100 && (
           <div className="cinematic-loader">
-            <span className="eyebrow text-white/60">Preparing the house</span>
+            <span className="eyebrow text-white/60">{t("home.prepare")}</span>
             <div>
               <i style={{ width: `${progress}%` }} />
             </div>

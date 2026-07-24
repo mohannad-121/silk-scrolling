@@ -13,11 +13,5 @@ export const Route = createFileRoute("/spa")({
       { property: "og:description", content: "Immersive spa rituals at ÉLAN." },
     ],
   }),
-  component: () => (
-    <StubPage
-      title="The Spa"
-      tagline="Rituals"
-      body="Full spa page with ritual builder, therapist profiles and calming imagery is next."
-    />
-  ),
+  component: () => <StubPage page="spa" />,
 });

@@ -1894,6 +1894,48 @@
     display: none;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-journey {
+    height: auto !important;
+  }
+  .cinematic-stage {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .cinematic-scene {
+    position: relative;
+    display: block;
+    height: 72svh;
+    clip-path: none !important;
+    filter: none !important;
+  }
+  .scene--street {
+    height: 100svh;
+  }
+  .cinematic-scene .cinematic-image {
+    transform: none !important;
+  }
+  .cinematic-intro {
+    position: absolute;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-42%) !important;
+  }
+  .cinematic-scene-copy,
+  .cinematic-doorway,
+  .cinematic-arch-mask,
+  .cinematic-reveal-mask,
+  .cinematic-curtain-mask,
+  .cinematic-laser-mask,
+  .cinematic-water-mask,
+  .cinematic-steam,
+  .cinematic-water,
+  .cinematic-progress,
+  .cinematic-loader {
+    display: none !important;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1939,5 +1981,302 @@
   }
   .cinematic-scene-copy {
     display: none;
+  }
+}
+
+/* Continuous cinematic layers, portal transitions and Arabic direction support. */
+.cinematic-journey {
+  height: 1120vh;
+}
+.cinematic-scene {
+  z-index: 1;
+  display: block;
+  opacity: 1;
+  filter: none;
+  clip-path: inset(100% 0 0 0);
+}
+.scene--street {
+  z-index: 1;
+  clip-path: inset(0);
+}
+.scene--reception {
+  z-index: 2;
+  clip-path: inset(50% 50% 50% 50% round 2rem);
+}
+.scene--manicure {
+  z-index: 3;
+  clip-path: inset(50% 50% 50% 50% round 48% 48% 2rem 2rem / 24% 24% 2rem 2rem);
+}
+.scene--look {
+  z-index: 4;
+  clip-path: circle(0% at 54% 48%);
+}
+.scene--pedicure {
+  z-index: 5;
+  clip-path: inset(50% 50% 50% 50%);
+}
+.scene--laser {
+  z-index: 6;
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+}
+.scene--jacuzzi {
+  z-index: 7;
+  clip-path: ellipse(0% 0% at 52% 58%);
+}
+.cinematic-image {
+  will-change: transform;
+}
+.cinematic-scene-shade {
+  z-index: 1;
+}
+.cinematic-doorway,
+.cinematic-arch-mask,
+.cinematic-reveal-mask,
+.cinematic-curtain-mask,
+.cinematic-laser-mask,
+.cinematic-water-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+}
+.cinematic-doorway {
+  clip-path: inset(50% 50% 50% 50% round 2rem);
+  border: 1px solid rgb(231 183 112 / 0.6);
+  box-shadow:
+    inset 0 0 0 17px rgb(29 10 7 / 0.28),
+    0 0 70px rgb(240 181 95 / 0.18);
+}
+.cinematic-door {
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+}
+.cinematic-arch-mask {
+  clip-path: inset(50% 50% 50% 50% round 48% 48% 2rem 2rem / 24% 24% 2rem 2rem);
+  border: 2px solid rgb(235 190 118 / 0.45);
+  box-shadow: inset 0 0 0 18px rgb(20 7 5 / 0.22);
+}
+.cinematic-reveal-mask {
+  clip-path: circle(0% at 54% 48%);
+  box-shadow: inset 0 0 0 100vmax rgb(13 5 3 / 0.28);
+}
+.cinematic-curtain-mask {
+  clip-path: inset(50% 50% 50% 50%);
+  background: linear-gradient(
+    90deg,
+    rgb(31 7 6 / 0.9) 0 10%,
+    transparent 29% 71%,
+    rgb(31 7 6 / 0.9) 90% 100%
+  );
+  box-shadow:
+    inset 70px 0 80px rgb(10 4 3 / 0.55),
+    inset -70px 0 80px rgb(10 4 3 / 0.55);
+}
+.cinematic-laser-mask {
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  background: linear-gradient(120deg, rgb(10 6 12 / 0.6), transparent 42%, rgb(145 91 144 / 0.22));
+}
+.cinematic-water-mask {
+  clip-path: ellipse(0% 0% at 52% 58%);
+  border: 1px solid rgb(234 190 117 / 0.35);
+  box-shadow: inset 0 0 80px rgb(255 202 126 / 0.16);
+}
+.cinematic-street-left,
+.cinematic-street-right,
+.cinematic-doorway,
+.cinematic-arch-mask,
+.cinematic-reveal-mask,
+.cinematic-curtain-mask,
+.cinematic-laser-mask,
+.cinematic-water-mask {
+  will-change: clip-path, transform;
+}
+.cinematic-intro,
+.cinematic-scene-copy {
+  z-index: 12;
+}
+.cinematic-progress {
+  z-index: 15;
+}
+.cinematic-loader {
+  z-index: 30;
+}
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: rgb(255 255 255 / 0.72);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+}
+.language-switch.is-solid {
+  color: var(--muted-foreground);
+}
+.language-switch button {
+  border: 0;
+  background: transparent;
+  padding: 0.15rem;
+  color: inherit;
+  cursor: pointer;
+}
+.language-switch button[aria-pressed="true"] {
+  color: var(--champagne);
+  font-weight: 700;
+}
+.admin-service-create {
+  grid-template-columns: 1.1fr 1fr 1fr 1.1fr 0.55fr 0.55fr auto;
+}
+.admin-service-row--bilingual {
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+}
+.admin-service-row--bilingual > div {
+  grid-column: 1 / -1;
+}
+html[dir="rtl"] {
+  --font-sans: "Cairo", ui-sans-serif, system-ui, sans-serif;
+}
+html[dir="rtl"] body {
+  font-family: "Cairo", ui-sans-serif, system-ui, sans-serif;
+}
+html[dir="rtl"] .font-serif,
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3 {
+  font-family: "Cairo", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+}
+html[dir="rtl"] .eyebrow {
+  letter-spacing: 0.12em;
+}
+html[dir="rtl"] .cinematic-intro,
+html[dir="rtl"] .cinematic-scene-copy {
+  left: auto;
+  right: clamp(1.5rem, 8vw, 9rem);
+  text-align: right;
+}
+html[dir="rtl"] .cinematic-look-copy {
+  right: auto;
+  left: clamp(1.5rem, 8vw, 9rem);
+  text-align: left;
+}
+html[dir="rtl"] .cinematic-progress {
+  left: auto;
+  right: 2rem;
+}
+html[dir="rtl"] .cinematic-service-link:hover {
+  padding-left: 0;
+  padding-right: 0.5rem;
+}
+html[dir="rtl"] .salon-concierge {
+  right: auto;
+  left: 1.4rem;
+}
+html[dir="rtl"] .concierge-panel {
+  right: auto;
+  left: 0;
+}
+html[dir="rtl"] .admin-sidebar {
+  border-right: 0;
+  border-left: 1px solid rgb(91 36 35 / 0.14);
+}
+html[dir="rtl"] .admin-sidebar > a span {
+  margin-left: 0;
+  margin-right: auto;
+}
+html[dir="rtl"] .admin-specialists b {
+  margin-left: 0;
+  margin-right: auto;
+}
+html[dir="rtl"] .booking-review > div {
+  grid-template-columns: 1fr 7.5rem;
+}
+html[dir="rtl"] .booking-review small {
+  grid-column: 1;
+}
+html[dir="rtl"] .booking-actions,
+html[dir="rtl"] .booking-service-choice,
+html[dir="rtl"] .admin-appointment {
+  direction: rtl;
+}
+@media (max-width: 900px) {
+  .cinematic-journey {
+    height: 940vh;
+  }
+  .admin-service-create {
+    grid-template-columns: 1fr 1fr;
+  }
+  .admin-service-create b,
+  .admin-service-create button {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 640px) {
+  .cinematic-journey {
+    height: 820vh;
+  }
+  html[dir="rtl"] .cinematic-intro,
+  html[dir="rtl"] .cinematic-scene-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    width: auto;
+  }
+  html[dir="rtl"] .cinematic-look-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    text-align: right;
+  }
+  html[dir="rtl"] .cinematic-progress {
+    left: auto;
+    right: 1.35rem;
+  }
+  html[dir="rtl"] .salon-concierge {
+    left: 1rem;
+    right: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-journey {
+    height: auto !important;
+  }
+  .cinematic-stage {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .cinematic-scene {
+    position: relative;
+    display: block;
+    height: 72svh;
+    clip-path: none !important;
+    filter: none !important;
+  }
+  .scene--street {
+    height: 100svh;
+  }
+  .cinematic-scene .cinematic-image {
+    transform: none !important;
+  }
+  .cinematic-intro {
+    position: absolute;
+    top: 50svh;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-42%) !important;
+  }
+  .cinematic-scene-copy,
+  .cinematic-doorway,
+  .cinematic-arch-mask,
+  .cinematic-reveal-mask,
+  .cinematic-curtain-mask,
+  .cinematic-laser-mask,
+  .cinematic-water-mask,
+  .cinematic-steam,
+  .cinematic-water,
+  .cinematic-progress,
+  .cinematic-loader {
+    display: none !important;
   }
 }

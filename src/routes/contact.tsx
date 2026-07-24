@@ -13,11 +13,5 @@ export const Route = createFileRoute("/contact")({
       { property: "og:description", content: "Find and reach ÉLAN Nail & Spa." },
     ],
   }),
-  component: () => (
-    <StubPage
-      title="Find Us"
-      tagline="Contact"
-      body="Location, opening hours, WhatsApp and reservation form coming next."
-    />
-  ),
+  component: () => <StubPage page="contact" />,
 });

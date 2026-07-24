@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   CalendarDays,
-  Check,
   ChevronRight,
   CircleDollarSign,
   Clock3,
@@ -12,11 +11,12 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
-
+import { useI18n } from "@/i18n/salon-i18n";
 import {
   type AppointmentStatus,
   type Service,
   archiveService,
+  getJordanToday,
   updateAppointmentStatus,
   upsertService,
   useSalonData,
@@ -24,177 +24,156 @@ import {
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
-    meta: [{ title: "Studio Console — ÉLAN" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Studio Console — ELAN" }, { name: "robots", content: "noindex" }],
   }),
   component: AdminPage,
 });
-
-const statusLabels: Record<AppointmentStatus, string> = {
-  pending: "Pending",
-  confirmed: "Confirmed",
-  waiting: "Waiting",
-  checked_in: "Checked in",
-  in_progress: "In progress",
-  completed: "Completed",
-  cancelled: "Cancelled",
-  no_show: "No-show",
-};
-
+const statuses: AppointmentStatus[] = [
+  "pending",
+  "confirmed",
+  "waiting",
+  "checked_in",
+  "in_progress",
+  "completed",
+  "cancelled",
+  "no_show",
+];
 function AdminPage() {
   const { appointments, categories, services, specialists } = useSalonData();
+  const { t, text, formatCurrency } = useI18n();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<AppointmentStatus | "all">("all");
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getJordanToday();
   const activeToday = appointments.filter(
-    (appointment) =>
-      appointment.appointmentDate === today &&
-      !["cancelled", "no_show"].includes(appointment.status),
+    (item) => item.appointmentDate === today && !["cancelled", "no_show"].includes(item.status),
   );
-  const revenue = activeToday.reduce((total, appointment) => total + appointment.totalPrice, 0);
+  const revenue = activeToday.reduce((total, item) => total + item.totalPrice, 0);
   const filtered = appointments
-    .filter((appointment) => {
-      const service = services.find((item) => item.id === appointment.serviceId);
+    .filter((item) => {
+      const service = services.find((entry) => entry.id === item.serviceId);
       const haystack =
-        `${appointment.customerName} ${appointment.customerPhone} ${service?.name ?? ""}`.toLowerCase();
-      return (
-        haystack.includes(query.toLowerCase()) &&
-        (status === "all" || appointment.status === status)
-      );
+        `${item.customerName} ${item.customerPhone} ${service ? `${service.nameEn} ${service.nameAr}` : ""}`.toLowerCase();
+      return haystack.includes(query.toLowerCase()) && (status === "all" || item.status === status);
     })
     .sort((a, b) =>
       `${a.appointmentDate}${a.startTime}`.localeCompare(`${b.appointmentDate}${b.startTime}`),
     );
-
   return (
     <div className="admin-page min-h-screen bg-[#f7f1ea] text-espresso">
       <header className="admin-header">
         <Link to="/" className="font-serif text-2xl tracking-[0.22em]">
-          ÉLAN
+          ELAN
         </Link>
         <div>
-          <span>Studio console</span>
-          <span className="admin-demo-pill">Local demo mode</span>
+          <span>{t("admin.console")}</span>
+          <span className="admin-demo-pill">{t("admin.demo")}</span>
         </div>
       </header>
       <div className="admin-layout">
         <aside className="admin-sidebar">
           <a href="#overview">
-            <LayoutDashboard size={16} /> Overview
+            <LayoutDashboard size={16} /> {t("admin.overview")}
           </a>
           <a href="#appointments">
-            <CalendarDays size={16} /> Appointments <span>{appointments.length}</span>
+            <CalendarDays size={16} /> {t("admin.appointments")} <span>{appointments.length}</span>
           </a>
           <a href="#services">
-            <Settings2 size={16} /> Services
+            <Settings2 size={16} /> {t("admin.services")}
           </a>
           <a href="#specialists">
-            <UsersRound size={16} /> Specialists
+            <UsersRound size={16} /> {t("admin.specialists")}
           </a>
           <Link to="/book" className="admin-book-link">
-            Open booking flow <ChevronRight size={15} />
+            {t("admin.openBooking")} <ChevronRight size={15} />
           </Link>
         </aside>
         <main className="admin-main">
           <section id="overview">
-            <span className="eyebrow">Today · live</span>
-            <h1>The house at a glance.</h1>
-            <p className="admin-subtitle">
-              All changes update the booking flow and concierge instantly in this browser.
-            </p>
+            <span className="eyebrow">{t("admin.today")}</span>
+            <h1>{t("admin.title")}</h1>
+            <p className="admin-subtitle">{t("admin.copy")}</p>
             <div className="admin-metrics">
               <Metric
-                label="Today’s appointments"
+                label={t("admin.todayAppointments")}
                 value={activeToday.length}
                 icon={<CalendarDays size={18} />}
               />
               <Metric
-                label="Pending confirmation"
-                value={
-                  appointments.filter((appointment) => appointment.status === "pending").length
-                }
+                label={t("admin.pending")}
+                value={appointments.filter((item) => item.status === "pending").length}
                 icon={<Clock3 size={18} />}
               />
               <Metric
-                label="Guests in progress"
-                value={
-                  appointments.filter((appointment) => appointment.status === "in_progress").length
-                }
+                label={t("admin.inProgress")}
+                value={appointments.filter((item) => item.status === "in_progress").length}
                 icon={<UsersRound size={18} />}
               />
               <Metric
-                label="Today’s revenue"
-                value={`AED ${revenue.toLocaleString()}`}
+                label={t("admin.revenue")}
+                value={formatCurrency(revenue)}
                 icon={<CircleDollarSign size={18} />}
               />
             </div>
           </section>
-
           <section id="appointments" className="admin-section">
-            <div className="admin-section-heading">
-              <div>
-                <span className="eyebrow">Live queue</span>
-                <h2>Appointments</h2>
-              </div>
-              <span>{filtered.length} shown</span>
-            </div>
+            <SectionTitle
+              eyebrow={t("admin.queue")}
+              title={t("admin.appointments")}
+              side={`${filtered.length} ${t("admin.shown")}`}
+            />
             <div className="admin-filters">
               <label>
                 <Search size={16} />
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search guest or phone"
+                  placeholder={t("admin.search")}
                 />
               </label>
               <select
                 value={status}
                 onChange={(event) => setStatus(event.target.value as typeof status)}
               >
-                <option value="all">All statuses</option>
-                {Object.entries(statusLabels).map(([value, label]) => (
-                  <option value={value} key={value}>
-                    {label}
+                <option value="all">{t("admin.allStatuses")}</option>
+                {statuses.map((item) => (
+                  <option value={item} key={item}>
+                    {t(`admin.status.${item}`)}
                   </option>
                 ))}
               </select>
             </div>
             <div className="admin-appointments">
               {filtered.length ? (
-                filtered.map((appointment) => (
+                filtered.map((item) => (
                   <AppointmentRow
-                    key={appointment.id}
-                    appointment={appointment}
+                    key={item.id}
+                    appointment={item}
                     services={services}
                     specialists={specialists}
                   />
                 ))
               ) : (
-                <div className="admin-empty">
-                  No appointments match this view. New online bookings appear here immediately.
-                </div>
+                <div className="admin-empty">{t("admin.empty")}</div>
               )}
             </div>
           </section>
-
           <section id="services" className="admin-section">
-            <div className="admin-section-heading">
-              <div>
-                <span className="eyebrow">Public menu</span>
-                <h2>Service management</h2>
-              </div>
-              <span>{services.filter((service) => service.enabled).length} active</span>
-            </div>
+            <SectionTitle
+              eyebrow={t("admin.menu")}
+              title={t("admin.manage")}
+              side={`${services.filter((item) => item.enabled).length} ${t("admin.active")}`}
+            />
             <ServiceCreator categories={categories} specialists={specialists} />
             <div className="admin-service-grid">
               {categories.map((category) => (
                 <div className="admin-service-group" key={category.id}>
-                  <h3>{category.name}</h3>
+                  <h3>{text(category, "name")}</h3>
                   {services
-                    .filter((service) => service.categoryId === category.id)
-                    .map((service) => (
+                    .filter((item) => item.categoryId === category.id)
+                    .map((item) => (
                       <ServiceEditor
-                        service={service}
-                        key={service.id}
+                        service={item}
+                        key={item.id}
                         categoryId={category.id}
                         specialistIds={specialists
                           .filter((specialist) =>
@@ -207,27 +186,21 @@ function AdminPage() {
               ))}
             </div>
           </section>
-
           <section id="specialists" className="admin-section">
-            <div className="admin-section-heading">
-              <div>
-                <span className="eyebrow">Team & schedule</span>
-                <h2>Specialists</h2>
-              </div>
-            </div>
+            <SectionTitle eyebrow={t("admin.team")} title={t("admin.specialists")} />
             <div className="admin-specialists">
-              {specialists.map((specialist) => (
-                <article key={specialist.id}>
-                  <span>{specialist.initials}</span>
+              {specialists.map((item) => (
+                <article key={item.id}>
+                  <span>{item.initials}</span>
                   <div>
-                    <h3>{specialist.name}</h3>
-                    <p>{specialist.role}</p>
+                    <h3>{text(item, "name")}</h3>
+                    <p>{text(item, "role")}</p>
                     <small>
-                      {specialist.serviceCategories
-                        .map(
-                          (categoryId) =>
-                            categories.find((category) => category.id === categoryId)?.shortName,
-                        )
+                      {item.serviceCategories
+                        .map((id) => {
+                          const category = categories.find((entry) => entry.id === id);
+                          return category ? text(category, "shortName") : "";
+                        })
                         .join(" · ")}
                     </small>
                   </div>
@@ -241,7 +214,17 @@ function AdminPage() {
     </div>
   );
 }
-
+function SectionTitle({ eyebrow, title, side }: { eyebrow: string; title: string; side?: string }) {
+  return (
+    <div className="admin-section-heading">
+      <div>
+        <span className="eyebrow">{eyebrow}</span>
+        <h2>{title}</h2>
+      </div>
+      {side && <span>{side}</span>}
+    </div>
+  );
+}
 function Metric({
   label,
   value,
@@ -259,7 +242,6 @@ function Metric({
     </article>
   );
 }
-
 function AppointmentRow({
   appointment,
   services,
@@ -269,6 +251,7 @@ function AppointmentRow({
   services: Service[];
   specialists: ReturnType<typeof useSalonData>["specialists"];
 }) {
+  const { t, text } = useI18n();
   const service = services.find((item) => item.id === appointment.serviceId);
   const specialist = specialists.find((item) => item.id === appointment.specialistId);
   return (
@@ -282,12 +265,12 @@ function AppointmentRow({
         <span>{appointment.customerPhone}</span>
       </div>
       <div>
-        <b>{service?.name ?? "Archived service"}</b>
-        <span>{specialist?.name ?? "Any available"}</span>
+        <b>{service ? text(service, "name") : t("common.archived")}</b>
+        <span>{specialist ? text(specialist, "name") : t("common.anyAvailable")}</span>
       </div>
       <div>
         <span className={`admin-status admin-status--${appointment.status}`}>
-          {statusLabels[appointment.status]}
+          {t(`admin.status.${appointment.status}`)}
         </span>
         <select
           aria-label={`Update ${appointment.customerName} status`}
@@ -296,9 +279,9 @@ function AppointmentRow({
             updateAppointmentStatus(appointment.id, event.target.value as AppointmentStatus)
           }
         >
-          {Object.entries(statusLabels).map(([value, label]) => (
-            <option value={value} key={value}>
-              {label}
+          {statuses.map((item) => (
+            <option value={item} key={item}>
+              {t(`admin.status.${item}`)}
             </option>
           ))}
         </select>
@@ -306,46 +289,55 @@ function AppointmentRow({
     </article>
   );
 }
-
 function ServiceCreator({
   categories,
   specialists,
 }: Pick<ReturnType<typeof useSalonData>, "categories" | "specialists">) {
-  const [name, setName] = useState("");
+  const { t, text } = useI18n();
+  const [nameEn, setNameEn] = useState("");
+  const [nameAr, setNameAr] = useState("");
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "nails");
-  const [price, setPrice] = useState("200");
+  const [price, setPrice] = useState("20");
   const [duration, setDuration] = useState("60");
-  const addService = () => {
-    if (!name.trim()) return;
+  const add = () => {
+    if (!nameEn.trim() || !nameAr.trim()) return;
     upsertService({
       id: `custom-${crypto.randomUUID()}`,
       categoryId,
-      name: name.trim(),
-      description: "A new tailored ÉLAN ritual.",
+      nameEn: nameEn.trim(),
+      nameAr: nameAr.trim(),
+      descriptionEn: "A new tailored ELAN ritual.",
+      descriptionAr: "طقس إيلان جديد ومصمم لك.",
       price: Number(price) || 0,
       duration: Number(duration) || 30,
       buffer: 10,
       enabled: true,
       specialistIds: specialists
-        .filter((specialist) => specialist.serviceCategories.includes(categoryId))
-        .map((specialist) => specialist.id),
+        .filter((item) => item.serviceCategories.includes(categoryId))
+        .map((item) => item.id),
     });
-    setName("");
+    setNameEn("");
+    setNameAr("");
   };
   return (
     <div className="admin-service-create">
       <b>
-        <Plus size={16} /> Add a service
+        <Plus size={16} /> {t("admin.addService")}
       </b>
       <input
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        placeholder="Service name"
+        value={nameEn}
+        onChange={(event) => setNameEn(event.target.value)}
+        placeholder={t("admin.nameEn")}
+      />
+      <input
+        value={nameAr}
+        onChange={(event) => setNameAr(event.target.value)}
+        placeholder={t("admin.nameAr")}
       />
       <select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}>
-        {categories.map((category) => (
-          <option key={category.id} value={category.id}>
-            {category.name}
+        {categories.map((item) => (
+          <option key={item.id} value={item.id}>
+            {text(item, "name")}
           </option>
         ))}
       </select>
@@ -353,19 +345,18 @@ function ServiceCreator({
         value={duration}
         onChange={(event) => setDuration(event.target.value)}
         inputMode="numeric"
-        aria-label="Duration in minutes"
+        aria-label={t("admin.duration")}
       />
       <input
         value={price}
         onChange={(event) => setPrice(event.target.value)}
         inputMode="decimal"
-        aria-label="Price in AED"
+        aria-label={t("admin.price")}
       />
-      <button onClick={addService}>Add</button>
+      <button onClick={add}>{t("common.add")}</button>
     </div>
   );
 }
-
 function ServiceEditor({
   service,
   categoryId,
@@ -375,22 +366,46 @@ function ServiceEditor({
   categoryId: string;
   specialistIds: string[];
 }) {
+  const { t } = useI18n();
   const [draft, setDraft] = useState(service);
   const changed = useMemo(
     () => JSON.stringify(draft) !== JSON.stringify(service),
     [draft, service],
   );
   return (
-    <article className={`admin-service-row ${service.enabled ? "" : "is-archived"}`}>
+    <article
+      className={`admin-service-row admin-service-row--bilingual ${service.enabled ? "" : "is-archived"}`}
+    >
       <label>
-        <span>Name</span>
+        <span>{t("admin.nameEn")}</span>
         <input
-          value={draft.name}
-          onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+          value={draft.nameEn}
+          onChange={(event) => setDraft({ ...draft, nameEn: event.target.value })}
         />
       </label>
       <label>
-        <span>Minutes</span>
+        <span>{t("admin.nameAr")}</span>
+        <input
+          value={draft.nameAr}
+          onChange={(event) => setDraft({ ...draft, nameAr: event.target.value })}
+        />
+      </label>
+      <label>
+        <span>{t("admin.descriptionEn")}</span>
+        <input
+          value={draft.descriptionEn}
+          onChange={(event) => setDraft({ ...draft, descriptionEn: event.target.value })}
+        />
+      </label>
+      <label>
+        <span>{t("admin.descriptionAr")}</span>
+        <input
+          value={draft.descriptionAr}
+          onChange={(event) => setDraft({ ...draft, descriptionAr: event.target.value })}
+        />
+      </label>
+      <label>
+        <span>{t("admin.duration")}</span>
         <input
           value={draft.duration}
           inputMode="numeric"
@@ -398,7 +413,7 @@ function ServiceEditor({
         />
       </label>
       <label>
-        <span>AED</span>
+        <span>{t("admin.price")}</span>
         <input
           value={draft.price}
           inputMode="decimal"
@@ -410,10 +425,10 @@ function ServiceEditor({
           onClick={() => upsertService({ ...draft, categoryId, specialistIds })}
           disabled={!changed}
         >
-          Save
+          {t("common.save")}
         </button>
         <button onClick={() => archiveService(service.id)} className="admin-archive">
-          {service.enabled ? "Archive" : "Archived"}
+          {service.enabled ? t("common.archive") : t("common.archived")}
         </button>
       </div>
     </article>
