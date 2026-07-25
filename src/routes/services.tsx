@@ -1,41 +1,37 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-
+import { useI18n } from "@/i18n/salon-i18n";
 import { useSalonData } from "@/lib/salon-data";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — ÉLAN Nail & Spa" },
+      { title: "Services — ELAN Nail & Spa" },
       {
         name: "description",
-        content:
-          "Explore ÉLAN's live manicure, pedicure, laser and spa menu with prices and durations.",
+        content: "Explore ELAN’s live manicure, pedicure, laser and spa menu in Jordanian dinars.",
       },
-      { property: "og:title", content: "Services — ÉLAN Nail & Spa" },
-      { property: "og:description", content: "Explore the ÉLAN ritual menu." },
     ],
   }),
   component: ServicesPage,
 });
-
 function ServicesPage() {
   const { categories, services } = useSalonData();
+  const { t, text, formatCurrency } = useI18n();
   return (
-    <div className="min-h-screen bg-ivory pt-32 pb-24 text-espresso md:pt-40">
+    <div className="min-h-screen bg-ivory pb-24 pt-32 text-espresso md:pt-40">
       <header className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <span className="eyebrow">The live menu</span>
+        <span className="eyebrow">{t("services.eyebrow")}</span>
         <h1 className="mt-4 max-w-3xl font-serif text-5xl leading-[.92] md:text-8xl">
-          Rituals made <em className="text-primary">personal.</em>
+          {t("services.title")}
         </h1>
         <p className="mt-6 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-          Our menu is edited in real time by the house. Choose an experience and let the rest unfold
-          around you.
+          {t("services.copy")}
         </p>
       </header>
       <main className="mx-auto mt-20 max-w-[1400px] px-6 md:px-10">
         {categories.map((category) => {
           const offerings = services.filter(
-            (service) => service.categoryId === category.id && service.enabled,
+            (item) => item.categoryId === category.id && item.enabled,
           );
           if (!offerings.length) return null;
           return (
@@ -44,34 +40,34 @@ function ServicesPage() {
               className="grid gap-8 border-t border-espresso/15 py-10 lg:grid-cols-[.7fr_1.3fr]"
             >
               <div>
-                <span className="eyebrow">{category.shortName}</span>
-                <h2 className="mt-3 font-serif text-4xl">{category.name}</h2>
+                <span className="eyebrow">{text(category, "shortName")}</span>
+                <h2 className="mt-3 font-serif text-4xl">{text(category, "name")}</h2>
                 <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-                  {category.description}
+                  {text(category, "description")}
                 </p>
               </div>
               <ul>
-                {offerings.map((service) => (
-                  <li key={service.id} className="border-b border-espresso/10 last:border-0">
+                {offerings.map((item) => (
+                  <li key={item.id} className="border-b border-espresso/10 last:border-0">
                     <Link
                       to="/book"
-                      search={{ service: service.id }}
+                      search={{ service: item.id }}
                       className="group grid grid-cols-[1fr_auto] gap-4 py-5"
                     >
                       <span>
                         <b className="font-serif text-2xl font-normal transition-colors group-hover:text-primary">
-                          {service.name}
+                          {text(item, "name")}
                         </b>
                         <small className="mt-1 block max-w-xl text-sm leading-relaxed text-muted-foreground">
-                          {service.description}
+                          {text(item, "description")}
                         </small>
                       </span>
-                      <span className="text-right">
+                      <span className="text-end">
                         <small className="block text-[10px] uppercase tracking-[.2em] text-muted-foreground">
-                          {service.duration} min
+                          {item.duration} {t("common.minutes")}
                         </small>
                         <b className="mt-2 block font-serif text-xl font-normal text-primary">
-                          AED {service.price}
+                          {formatCurrency(item.price)}
                         </b>
                       </span>
                     </Link>

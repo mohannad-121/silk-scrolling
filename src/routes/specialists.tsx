@@ -13,11 +13,5 @@ export const Route = createFileRoute("/specialists")({
       { property: "og:description", content: "Our editorial team of nail and spa specialists." },
     ],
   }),
-  component: () => (
-    <StubPage
-      title="The Atelier"
-      tagline="Specialists"
-      body="Full team directory with schedules and portfolios is next."
-    />
-  ),
+  component: () => <StubPage page="specialists" />,
 });

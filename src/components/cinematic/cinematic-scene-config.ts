@@ -1,92 +1,149 @@
 import artist from "@/assets/scene-artist.jpg";
-import exterior from "@/assets/scene-exterior.jpg";
-import interior from "@/assets/scene-interior.jpg";
-import manicure from "@/assets/scene-manicure.jpg";
-import pedicure from "@/assets/scene-pedicure.jpg";
-import spa from "@/assets/scene-spa.jpg";
+import exteriorClose from "@/assets/scene-exterior.jpg";
+import nailArtist from "@/assets/scene-manicure.jpg";
 
-export type CinematicSceneConfig = {
-  id: "street" | "reception" | "manicure" | "look" | "pedicure" | "laser" | "jacuzzi";
-  label: string;
-  eyebrow: string;
-  title: string;
+export type CinematicRoomId =
+  | "street"
+  | "approach"
+  | "entrance"
+  | "reception"
+  | "manicure"
+  | "artist"
+  | "nailReveal"
+  | "massage"
+  | "jacuzziEntry"
+  | "jacuzzi"
+  | "hairRoom"
+  | "hairStyle"
+  | "hairFinish";
+export type RoomEntrance = "street" | "glass" | "arch" | "nail" | "curtain" | "water" | "hair";
+export type CinematicRoomConfig = {
+  id: CinematicRoomId;
   image: string;
   alt: string;
+  focal: string;
+  entrance: RoomEntrance;
   start: number;
-  end: number;
 };
 
-export const cinematicScenes: CinematicSceneConfig[] = [
+export const cinematicRooms: CinematicRoomConfig[] = [
   {
     id: "street",
-    label: "01 / Arrival",
-    eyebrow: "The Avenue · Dusk",
-    title: "Where beauty becomes an experience.",
-    image: exterior,
-    alt: "ÉLAN salon exterior on a luxury street at dusk",
+    image: "/cinematic/exterior/street-arrival.png",
+    alt: "Wide dusk street with the entire ELAN salon storefront and entrance",
+    focal: "50% 54%",
+    entrance: "street",
     start: 0,
-    end: 0.28,
+  },
+  {
+    id: "approach",
+    image: exteriorClose,
+    alt: "ELAN facade and glass entrance as the visitor approaches from the pavement",
+    focal: "49% 54%",
+    entrance: "street",
+    start: 0.1,
+  },
+  {
+    id: "entrance",
+    image: "/cinematic/reception/reception-corridor.png",
+    alt: "View through the opening ELAN glass doors into the warm reception",
+    focal: "52% 52%",
+    entrance: "glass",
+    start: 0.2,
   },
   {
     id: "reception",
-    label: "02 / The House",
-    eyebrow: "Reception",
-    title: "Welcome to your private beauty experience.",
-    image: interior,
-    alt: "ÉLAN luxury reception with marble desk and warm lighting",
-    start: 0.27,
-    end: 0.47,
+    image: "/cinematic/reception/reception-corridor.png",
+    alt: "Reception desk and the arched corridor leading toward the treatment rooms",
+    focal: "58% 52%",
+    entrance: "arch",
+    start: 0.29,
   },
   {
     id: "manicure",
-    label: "03 / The Atelier",
-    eyebrow: "Manicure",
-    title: "Every detail, deliberately yours.",
-    image: manicure,
-    alt: "Nail artist applying polish during a manicure",
-    start: 0.44,
-    end: 0.61,
+    image: "/cinematic/manicure/atelier-wide.png",
+    alt: "Luxury manicure atelier with polished nail stations and warm lighting",
+    focal: "55% 52%",
+    entrance: "arch",
+    start: 0.39,
   },
   {
-    id: "look",
-    label: "04 / The Reveal",
-    eyebrow: "Finished Nails",
-    title: "The final touch becomes the whole mood.",
+    id: "artist",
+    image: nailArtist,
+    alt: "Nail technician refining a manicure with precise professional technique",
+    focal: "56% 50%",
+    entrance: "nail",
+    start: 0.49,
+  },
+  {
+    id: "nailReveal",
     image: artist,
-    alt: "Elegant hand presenting a refined manicure",
-    start: 0.57,
-    end: 0.71,
+    alt: "Detailed finished luxury manicure close-up",
+    focal: "55% 49%",
+    entrance: "nail",
+    start: 0.59,
   },
   {
-    id: "pedicure",
-    label: "05 / Slow Ritual",
-    eyebrow: "Pedicure Lounge",
-    title: "Ease into a softer pace.",
-    image: pedicure,
-    alt: "Luxury pedicure lounge with warm water bowls and candles",
+    id: "massage",
+    image: "/images/salon-scroll/massage-room-wide.png",
+    alt: "Private massage room reached through burgundy curtains and a cream stone arch",
+    focal: "52% 54%",
+    entrance: "arch",
     start: 0.68,
-    end: 0.8,
   },
   {
-    id: "laser",
-    label: "06 / Private Care",
-    eyebrow: "Laser Suite",
-    title: "Advanced care, quietly luxurious.",
-    image: "/cinematic/laser/laser-suite.png",
-    alt: "Private luxury laser treatment suite",
-    start: 0.77,
-    end: 0.89,
+    id: "jacuzziEntry",
+    image: "/cinematic/jacuzzi/jacuzzi-threshold.png",
+    alt: "Parted velvet curtains reveal the private candlelit jacuzzi suite",
+    focal: "51% 52%",
+    entrance: "curtain",
+    start: 0.76,
   },
   {
     id: "jacuzzi",
-    label: "07 / The Private Suite",
-    eyebrow: "Jacuzzi Ritual",
-    title: "Let the day dissolve around you.",
     image: "/cinematic/jacuzzi/private-jacuzzi.png",
-    alt: "Private luxury jacuzzi suite with warm candlelight",
-    start: 0.86,
-    end: 1,
+    alt: "Private ELAN jacuzzi suite with warm water, reflections and candlelight",
+    focal: "52% 54%",
+    entrance: "water",
+    start: 0.82,
+  },
+  {
+    id: "hairRoom",
+    image: "/images/salon-scroll/hair-room-wide.png",
+    alt: "Luxury hair styling suite viewed from its arched entrance",
+    focal: "58% 52%",
+    entrance: "hair",
+    start: 0.89,
+  },
+  {
+    id: "hairStyle",
+    image: "/images/salon-scroll/hair-styling-medium.png",
+    alt: "Professional hairstylist blow-drying and brushing a client’s hair",
+    focal: "57% 51%",
+    entrance: "hair",
+    start: 0.94,
+  },
+  {
+    id: "hairFinish",
+    image: "/images/salon-scroll/hair-finish-close.png",
+    alt: "Detailed final styling pass through smooth healthy hair",
+    focal: "60% 52%",
+    entrance: "hair",
+    start: 0.98,
   },
 ];
-
-export const firstCinematicAssets = cinematicScenes.slice(0, 2).map((scene) => scene.image);
+export const firstCinematicAssets = cinematicRooms.slice(0, 3).map((room) => room.image);
+export const cinematicTiming = {
+  streetApproach: 0.1,
+  mainEntrance: 0.2,
+  reception: 0.29,
+  manicureEntry: 0.39,
+  nailArtist: 0.49,
+  nailReveal: 0.59,
+  massageEntry: 0.68,
+  jacuzziThreshold: 0.76,
+  jacuzziEntry: 0.82,
+  hairEntry: 0.89,
+  hairStyle: 0.94,
+  hairFinish: 0.98,
+} as const;

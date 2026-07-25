@@ -14,11 +14,5 @@ export const Route = createFileRoute("/gallery")({
       { property: "og:description", content: "A gallery of luxury nail looks." },
     ],
   }),
-  component: () => (
-    <StubPage
-      title="The Gallery"
-      tagline="Looks"
-      body="Full lightbox gallery with cursor-follow zoom is next in the build."
-    />
-  ),
+  component: () => <StubPage page="gallery" />,
 });

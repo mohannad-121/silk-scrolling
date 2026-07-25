@@ -1894,6 +1894,461 @@
     display: none;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-journey {
+    height: auto !important;
+  }
+  .cinematic-stage {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .cinematic-scene {
+    position: relative;
+    display: block;
+    height: 72svh;
+    clip-path: none !important;
+    filter: none !important;
+  }
+  .scene--street {
+    height: 100svh;
+  }
+  .cinematic-scene .cinematic-image {
+    transform: none !important;
+  }
+  .cinematic-intro {
+    position: absolute;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-42%) !important;
+  }
+  .cinematic-scene-copy,
+  .cinematic-doorway,
+  .cinematic-arch-mask,
+  .cinematic-reveal-mask,
+  .cinematic-curtain-mask,
+  .cinematic-laser-mask,
+  .cinematic-water-mask,
+  .cinematic-steam,
+  .cinematic-water,
+  .cinematic-progress,
+  .cinematic-loader {
+    display: none !important;
+  }
+}
+
+/* Final cascade overrides for the cinematic walkthrough. */
+.cinematic-journey.cinematic-walkthrough {
+  height: 1980vh;
+}
+
+@media (max-width: 1000px) {
+  .cinematic-journey.cinematic-walkthrough {
+    height: 1540vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .cinematic-journey.cinematic-walkthrough {
+    height: 1120vh;
+  }
+
+  .cinematic-walkthrough .cinematic-final-copy {
+    top: 50%;
+  }
+
+  .cinematic-walkthrough .cinematic-final-copy h2 {
+    font-size: clamp(2.6rem, 12.5vw, 3.55rem);
+    line-height: 0.98;
+  }
+
+  .cinematic-walkthrough .cinematic-final-copy p {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-final-copy {
+    right: 1.35rem;
+    left: 1.35rem;
+    text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-journey.cinematic-walkthrough {
+    height: auto !important;
+  }
+}
+
+/* Room-by-room cinematic walkthrough: each new space is revealed through a physical aperture. */
+.cinematic-walkthrough {
+  height: 1680vh;
+  background: #120d0b;
+}
+.cinematic-walkthrough__stage {
+  background: #120d0b;
+}
+.cinematic-room {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  clip-path: inset(50% 50% 50% 50%);
+  background: #120d0b;
+  will-change: clip-path;
+}
+.cinematic-room__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.04);
+  will-change: transform;
+}
+.cinematic-room__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(12 6 5 / 0.48), transparent 49%, rgb(7 3 2 / 0.25)),
+    linear-gradient(0deg, rgb(9 4 3 / 0.52), transparent 48%);
+  pointer-events: none;
+}
+.room--street {
+  z-index: 1;
+  clip-path: inset(0);
+}
+.room--approach {
+  z-index: 2;
+  clip-path: inset(50% 50% 50% 50%);
+}
+.room--entrance {
+  z-index: 3;
+  clip-path: inset(50% 50% 50% 50% round 2rem);
+}
+.room--reception {
+  z-index: 4;
+  clip-path: inset(50% 50% 50% 50% round 3rem 3rem 1rem 1rem / 34% 34% 1rem 1rem);
+}
+.room--manicure {
+  z-index: 5;
+  clip-path: inset(50% 50% 50% 50% round 3rem 3rem 1rem 1rem / 34% 34% 1rem 1rem);
+}
+.room--artist,
+.room--nailReveal {
+  z-index: 6;
+  clip-path: circle(0% at 52% 50%);
+}
+.room--nailReveal {
+  z-index: 7;
+}
+.room--jacuzziEntry {
+  z-index: 8;
+  clip-path: inset(50% 50% 50% 50%);
+}
+.room--jacuzzi {
+  z-index: 9;
+  clip-path: ellipse(0% 0% at 52% 56%);
+}
+.room--massage {
+  z-index: 8;
+  clip-path: inset(50% 50% 50% 50% round 3rem 3rem 1rem 1rem / 34% 34% 1rem 1rem);
+}
+.room--jacuzziEntry {
+  z-index: 9;
+}
+.room--jacuzzi {
+  z-index: 10;
+}
+.room--hairRoom {
+  z-index: 11;
+  clip-path: inset(50% 50% 50% 50% round 3rem 3rem 1rem 1rem / 34% 34% 1rem 1rem);
+}
+.room--hairStyle,
+.room--hairFinish {
+  z-index: 12;
+  clip-path: circle(0% at 56% 52%);
+}
+.room--hairFinish {
+  z-index: 13;
+  clip-path: circle(0% at 60% 52%);
+}
+.cinematic-walkthrough .cinematic-street-left,
+.cinematic-walkthrough .cinematic-street-right {
+  z-index: 11;
+  width: 16%;
+  opacity: 0.72;
+}
+.cinematic-pavement-glow {
+  position: absolute;
+  z-index: 11;
+  inset: auto 0 0;
+  height: 48%;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 100%, rgb(229 169 80 / 0.24), transparent 62%);
+  mix-blend-mode: screen;
+}
+.cinematic-portal {
+  position: absolute;
+  z-index: 14;
+  inset: 0;
+  pointer-events: none;
+  clip-path: inset(50% 50% 50% 50%);
+  will-change: clip-path, transform;
+}
+.portal--street {
+  background: radial-gradient(
+    ellipse at 50% 52%,
+    transparent 0 24%,
+    rgb(10 4 3 / 0.24) 54%,
+    rgb(8 3 2 / 0.56) 100%
+  );
+}
+.portal--glass {
+  border: 2px solid rgb(238 193 118 / 0.42);
+  box-shadow:
+    inset 0 0 0 15px rgb(22 7 4 / 0.2),
+    0 0 80px rgb(255 202 121 / 0.18);
+}
+.portal-door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background:
+    linear-gradient(90deg, rgb(33 10 7 / 0.15), rgb(39 15 9 / 0.74)),
+    linear-gradient(90deg, transparent 48%, rgb(235 187 113 / 0.46) 49% 51%, transparent 52%);
+  box-shadow: inset 0 0 0 1px rgb(235 187 113 / 0.25);
+}
+.portal-door--left {
+  left: 0;
+}
+.portal-door--right {
+  right: 0;
+  transform: scaleX(-1);
+}
+.portal--reception,
+.portal--manicure,
+.portal--massage,
+.portal--hair {
+  border: 2px solid rgb(235 190 118 / 0.42);
+  border-radius: 50% 50% 2.5rem 2.5rem / 28% 28% 2.5rem 2.5rem;
+  box-shadow:
+    inset 0 0 0 19px rgb(20 7 5 / 0.2),
+    0 0 90px rgb(245 190 117 / 0.12);
+}
+.portal--nail {
+  clip-path: circle(0% at 52% 50%);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 100vmax rgb(11 4 3 / 0.25);
+}
+.portal--curtain {
+  overflow: hidden;
+  background: linear-gradient(90deg, rgb(25 7 6 / 0.8), transparent 20% 80%, rgb(25 7 6 / 0.8));
+}
+.portal-curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: repeating-linear-gradient(
+    90deg,
+    rgb(38 7 10 / 0.98),
+    rgb(70 16 21 / 0.9) 8%,
+    rgb(28 5 8 / 0.96) 16%
+  );
+  box-shadow: 0 0 55px rgb(3 1 1 / 0.45);
+}
+.portal-curtain--left {
+  left: 0;
+}
+.portal-curtain--right {
+  right: 0;
+  transform: scaleX(-1);
+}
+.portal--water {
+  clip-path: ellipse(0% 0% at 52% 56%);
+  border: 1px solid rgb(235 193 119 / 0.36);
+  box-shadow: inset 0 0 85px rgb(255 206 130 / 0.2);
+}
+.cinematic-walkthrough .cinematic-steam--spa {
+  z-index: 16;
+  opacity: 0;
+}
+.cinematic-walkthrough .cinematic-water--spa {
+  z-index: 16;
+  opacity: 0;
+}
+.cinematic-walkthrough .cinematic-intro,
+.cinematic-walkthrough .cinematic-scene-copy {
+  z-index: 20;
+}
+.cinematic-walkthrough .cinematic-reception-copy {
+  left: auto;
+  right: clamp(1.5rem, 8vw, 9rem);
+  width: min(370px, calc(100% - 3rem));
+  text-align: right;
+}
+.cinematic-walkthrough .cinematic-manicure-copy {
+  top: 18%;
+}
+.cinematic-walkthrough .cinematic-look-copy {
+  left: auto;
+  right: clamp(1.5rem, 8vw, 9rem);
+  top: 56%;
+}
+.cinematic-jacuzzi-copy {
+  top: 19%;
+}
+.cinematic-walkthrough .cinematic-massage-copy {
+  top: 54%;
+  width: min(390px, calc(100% - 3rem));
+}
+.cinematic-walkthrough .cinematic-hair-copy {
+  left: clamp(1.5rem, 8vw, 9rem);
+  top: 56%;
+  width: min(380px, calc(100% - 3rem));
+}
+.cinematic-walkthrough .cinematic-final-copy {
+  top: 55%;
+  width: min(480px, calc(100% - 3rem));
+}
+.cinematic-walkthrough .cinematic-final-copy h2 {
+  max-width: 11ch;
+}
+.cinematic-walkthrough .cinematic-progress {
+  z-index: 22;
+}
+.cinematic-walkthrough .cinematic-loader {
+  z-index: 30;
+}
+.cinematic-walkthrough .cinematic-service-link:focus-visible,
+.cinematic-walkthrough .cinematic-book-look:focus-visible,
+.cinematic-walkthrough .cinematic-final-cta:focus-visible,
+.cinematic-walkthrough .cinematic-quiet-link:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 5px;
+}
+
+@media (max-width: 1000px) {
+  .cinematic-walkthrough {
+    height: 1360vh;
+  }
+  .cinematic-walkthrough .cinematic-street-left,
+  .cinematic-walkthrough .cinematic-street-right {
+    width: 11%;
+  }
+  .cinematic-walkthrough .cinematic-intro {
+    left: 2rem;
+  }
+}
+@media (max-width: 640px) {
+  .cinematic-walkthrough {
+    height: 980vh;
+  }
+  .cinematic-walkthrough .cinematic-street-left,
+  .cinematic-walkthrough .cinematic-street-right {
+    display: none;
+  }
+  .cinematic-walkthrough .cinematic-intro {
+    left: 1.35rem;
+    width: calc(100% - 2.7rem);
+  }
+  .cinematic-walkthrough .cinematic-intro h1 {
+    font-size: clamp(3.2rem, 15vw, 4.7rem);
+  }
+  .cinematic-walkthrough .cinematic-scene-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    width: auto;
+  }
+  .cinematic-walkthrough .cinematic-reception-copy,
+  .cinematic-walkthrough .cinematic-look-copy,
+  .cinematic-walkthrough .cinematic-massage-copy,
+  .cinematic-walkthrough .cinematic-hair-copy {
+    right: 1.35rem;
+    text-align: left;
+  }
+  .cinematic-walkthrough .cinematic-service-rail {
+    display: none;
+  }
+  .cinematic-walkthrough .cinematic-final-copy {
+    top: 53%;
+  }
+  .cinematic-walkthrough .cinematic-progress {
+    left: 1.35rem;
+  }
+}
+html[dir="rtl"] .cinematic-walkthrough .cinematic-intro,
+html[dir="rtl"] .cinematic-walkthrough .cinematic-scene-copy {
+  left: auto;
+  right: clamp(1.5rem, 8vw, 9rem);
+  text-align: right;
+}
+html[dir="rtl"] .cinematic-walkthrough .cinematic-reception-copy,
+html[dir="rtl"] .cinematic-walkthrough .cinematic-look-copy {
+  right: auto;
+  left: clamp(1.5rem, 8vw, 9rem);
+  text-align: left;
+}
+html[dir="rtl"] .cinematic-walkthrough .cinematic-progress {
+  left: auto;
+  right: 2rem;
+}
+@media (max-width: 640px) {
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-intro,
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-scene-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    text-align: right;
+  }
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-reception-copy,
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-look-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    text-align: right;
+  }
+  html[dir="rtl"] .cinematic-walkthrough .cinematic-progress {
+    left: auto;
+    right: 1.35rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-walkthrough {
+    height: auto !important;
+  }
+  .cinematic-walkthrough__stage {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .cinematic-walkthrough .cinematic-room {
+    position: relative;
+    display: block;
+    height: 68svh;
+    clip-path: none !important;
+  }
+  .cinematic-walkthrough .room--street {
+    height: 100svh;
+  }
+  .cinematic-walkthrough .cinematic-room__image {
+    transform: none !important;
+  }
+  .cinematic-walkthrough .cinematic-intro {
+    position: absolute;
+    top: 50svh;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-42%) !important;
+  }
+  .cinematic-walkthrough .cinematic-scene-copy,
+  .cinematic-walkthrough .cinematic-portal,
+  .cinematic-walkthrough .cinematic-steam--spa,
+  .cinematic-walkthrough .cinematic-water--spa,
+  .cinematic-walkthrough .cinematic-progress,
+  .cinematic-walkthrough .cinematic-loader,
+  .cinematic-walkthrough .cinematic-pavement-glow {
+    display: none !important;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1939,5 +2394,621 @@
   }
   .cinematic-scene-copy {
     display: none;
+  }
+}
+
+/* Continuous cinematic layers, portal transitions and Arabic direction support. */
+.cinematic-journey {
+  height: 1680vh;
+}
+.cinematic-scene {
+  z-index: 1;
+  display: block;
+  opacity: 1;
+  filter: none;
+  clip-path: inset(100% 0 0 0);
+}
+.scene--street {
+  z-index: 1;
+  clip-path: inset(0);
+}
+.scene--reception {
+  z-index: 2;
+  clip-path: inset(50% 50% 50% 50% round 2rem);
+}
+.scene--manicure {
+  z-index: 3;
+  clip-path: inset(50% 50% 50% 50% round 48% 48% 2rem 2rem / 24% 24% 2rem 2rem);
+}
+.scene--look {
+  z-index: 4;
+  clip-path: circle(0% at 54% 48%);
+}
+.scene--pedicure {
+  z-index: 5;
+  clip-path: inset(50% 50% 50% 50%);
+}
+.scene--laser {
+  z-index: 6;
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+}
+.scene--jacuzzi {
+  z-index: 7;
+  clip-path: ellipse(0% 0% at 52% 58%);
+}
+.cinematic-image {
+  will-change: transform;
+}
+.cinematic-scene-shade {
+  z-index: 1;
+}
+.cinematic-doorway,
+.cinematic-arch-mask,
+.cinematic-reveal-mask,
+.cinematic-curtain-mask,
+.cinematic-laser-mask,
+.cinematic-water-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+}
+.cinematic-doorway {
+  clip-path: inset(50% 50% 50% 50% round 2rem);
+  border: 1px solid rgb(231 183 112 / 0.6);
+  box-shadow:
+    inset 0 0 0 17px rgb(29 10 7 / 0.28),
+    0 0 70px rgb(240 181 95 / 0.18);
+}
+.cinematic-door {
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+}
+.cinematic-arch-mask {
+  clip-path: inset(50% 50% 50% 50% round 48% 48% 2rem 2rem / 24% 24% 2rem 2rem);
+  border: 2px solid rgb(235 190 118 / 0.45);
+  box-shadow: inset 0 0 0 18px rgb(20 7 5 / 0.22);
+}
+.cinematic-reveal-mask {
+  clip-path: circle(0% at 54% 48%);
+  box-shadow: inset 0 0 0 100vmax rgb(13 5 3 / 0.28);
+}
+.cinematic-curtain-mask {
+  clip-path: inset(50% 50% 50% 50%);
+  background: linear-gradient(
+    90deg,
+    rgb(31 7 6 / 0.9) 0 10%,
+    transparent 29% 71%,
+    rgb(31 7 6 / 0.9) 90% 100%
+  );
+  box-shadow:
+    inset 70px 0 80px rgb(10 4 3 / 0.55),
+    inset -70px 0 80px rgb(10 4 3 / 0.55);
+}
+.cinematic-laser-mask {
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  background: linear-gradient(120deg, rgb(10 6 12 / 0.6), transparent 42%, rgb(145 91 144 / 0.22));
+}
+.cinematic-water-mask {
+  clip-path: ellipse(0% 0% at 52% 58%);
+  border: 1px solid rgb(234 190 117 / 0.35);
+  box-shadow: inset 0 0 80px rgb(255 202 126 / 0.16);
+}
+.cinematic-street-left,
+.cinematic-street-right,
+.cinematic-doorway,
+.cinematic-arch-mask,
+.cinematic-reveal-mask,
+.cinematic-curtain-mask,
+.cinematic-laser-mask,
+.cinematic-water-mask {
+  will-change: clip-path, transform;
+}
+.cinematic-intro,
+.cinematic-scene-copy {
+  z-index: 12;
+}
+.cinematic-progress {
+  z-index: 15;
+}
+.cinematic-loader {
+  z-index: 30;
+}
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: rgb(255 255 255 / 0.72);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+}
+.language-switch.is-solid {
+  color: var(--muted-foreground);
+}
+.language-switch button {
+  border: 0;
+  background: transparent;
+  padding: 0.15rem;
+  color: inherit;
+  cursor: pointer;
+}
+.language-switch button[aria-pressed="true"] {
+  color: var(--champagne);
+  font-weight: 700;
+}
+
+/* Premium cinematic site chrome. */
+.site-header {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding: 0.8rem clamp(1rem, 2.5vw, 2.35rem);
+  pointer-events: none;
+  transition: padding 360ms ease;
+}
+.site-header__frame,
+.site-header__mobile-menu {
+  pointer-events: auto;
+}
+.site-header__frame {
+  display: flex;
+  min-height: 4.25rem;
+  max-width: 84rem;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 2vw, 2.4rem);
+  border: 1px solid rgb(255 248 235 / 0.12);
+  border-radius: 1rem;
+  padding: 0.55rem 0.85rem 0.55rem 1rem;
+  color: var(--ivory);
+  background: linear-gradient(
+    100deg,
+    rgb(15 8 6 / 0.12),
+    rgb(38 17 15 / 0.07) 54%,
+    rgb(15 8 6 / 0.1)
+  );
+  box-shadow: inset 0 -1px 0 rgb(255 248 235 / 0.08);
+  backdrop-filter: blur(4px) saturate(108%);
+  transition:
+    background 360ms ease,
+    border-color 360ms ease,
+    box-shadow 360ms ease,
+    backdrop-filter 360ms ease;
+}
+.site-header--journey-scrolled {
+  padding-top: 0.55rem;
+}
+.site-header--journey-scrolled .site-header__frame {
+  border-color: rgb(229 198 145 / 0.18);
+  background: linear-gradient(
+    100deg,
+    rgb(15 8 6 / 0.22),
+    rgb(57 20 20 / 0.16) 54%,
+    rgb(15 8 6 / 0.2)
+  );
+  box-shadow: inset 0 -1px 0 rgb(255 248 235 / 0.12);
+  backdrop-filter: blur(6px) saturate(110%);
+}
+.site-header--page .site-header__frame {
+  border-color: rgb(91 36 35 / 0.13);
+  color: var(--espresso);
+  background: linear-gradient(100deg, rgb(255 252 246 / 0.94), rgb(247 239 228 / 0.88));
+  box-shadow:
+    0 10px 30px rgb(48 25 19 / 0.1),
+    inset 0 1px 0 rgb(255 255 255 / 0.8);
+  backdrop-filter: blur(14px) saturate(105%);
+}
+.salon-brand {
+  display: inline-flex;
+  min-width: fit-content;
+  align-items: center;
+  gap: 0.48rem;
+  color: inherit;
+  text-decoration: none;
+}
+.salon-brand:focus-visible,
+.site-header__link:focus-visible,
+.site-header__book:focus-visible,
+.site-header__menu-toggle:focus-visible,
+.site-header__mobile-link:focus-visible,
+.site-header__mobile-book:focus-visible,
+.site-header__language button:focus-visible {
+  outline: 2px solid var(--champagne);
+  outline-offset: 4px;
+}
+.salon-brand__mark {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+}
+.salon-brand__wordmark {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1;
+}
+.salon-brand__descriptor {
+  margin-left: 0.12rem;
+  color: currentColor;
+  opacity: 0.68;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+.site-header__links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 2.05vw, 2rem);
+  flex: 1;
+}
+.site-header__link {
+  position: relative;
+  padding: 0.65rem 0;
+  color: inherit;
+  font-size: 0.61rem;
+  font-weight: 600;
+  letter-spacing: 0.19em;
+  text-decoration: none;
+  text-transform: uppercase;
+  opacity: 0.78;
+  transition:
+    color 200ms ease,
+    opacity 200ms ease;
+}
+.site-header__link::after {
+  position: absolute;
+  right: 0;
+  bottom: 0.2rem;
+  left: 0;
+  height: 1px;
+  content: "";
+  background: var(--champagne);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 220ms ease;
+}
+.site-header__link:hover,
+.site-header__link[aria-current="page"] {
+  color: var(--champagne);
+  opacity: 1;
+}
+.site-header__link:hover::after,
+.site-header__link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+.site-header__actions {
+  display: flex;
+  min-width: fit-content;
+  align-items: center;
+  gap: 0.45rem;
+}
+.site-header__language {
+  color: inherit;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+.site-header__language button {
+  border-radius: 999px;
+  padding: 0.35rem 0.32rem;
+  transition:
+    color 200ms ease,
+    background 200ms ease;
+}
+.site-header__language button[aria-pressed="true"] {
+  color: var(--espresso);
+  background: var(--champagne);
+}
+.site-header__book,
+.site-header__mobile-book {
+  display: inline-flex;
+  min-height: 2.4rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(237 211 162 / 0.75);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  color: var(--espresso);
+  background: linear-gradient(120deg, #e8ca95, #c99a58);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.42),
+    0 5px 16px rgb(8 3 2 / 0.14);
+  font-size: 0.59rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    filter 200ms ease;
+}
+.site-header__book:hover,
+.site-header__mobile-book:hover {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    0 8px 20px rgb(8 3 2 / 0.22);
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+.site-header__menu-toggle {
+  display: none;
+  width: 2.35rem;
+  height: 2.35rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.site-header__menu-toggle svg {
+  width: 1rem;
+  height: 1rem;
+}
+.site-header__mobile-menu {
+  width: min(100%, 84rem);
+  margin: 0.55rem auto 0;
+  border: 1px solid rgb(229 198 145 / 0.26);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  color: var(--ivory);
+  background: linear-gradient(145deg, rgb(24 10 9 / 0.96), rgb(69 23 24 / 0.94));
+  box-shadow: 0 22px 48px rgb(10 4 3 / 0.3);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+.site-header--page .site-header__mobile-menu {
+  border-color: rgb(91 36 35 / 0.14);
+  color: var(--espresso);
+  background: linear-gradient(145deg, rgb(255 252 246 / 0.98), rgb(244 231 212 / 0.96));
+}
+.site-header__mobile-menu nav {
+  display: grid;
+}
+.site-header__mobile-link {
+  display: flex;
+  min-height: 3.15rem;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  color: inherit;
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  text-decoration: none;
+}
+.site-header__mobile-link span {
+  color: var(--champagne);
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.site-header__mobile-book {
+  width: 100%;
+  margin-top: 0.8rem;
+}
+html[dir="rtl"] .salon-brand__descriptor {
+  margin-right: 0.12rem;
+  margin-left: 0;
+}
+html[dir="rtl"] .site-header__link {
+  letter-spacing: 0.08em;
+}
+html[dir="rtl"] .site-header__mobile-link {
+  font-family: "Cairo", ui-sans-serif, system-ui, sans-serif;
+}
+@media (max-width: 1100px) {
+  .site-header__links {
+    gap: 1rem;
+  }
+  .site-header__link {
+    font-size: 0.56rem;
+  }
+}
+@media (max-width: 900px) {
+  .site-header {
+    padding: 0.65rem 0.8rem;
+  }
+  .site-header__frame {
+    min-height: 3.85rem;
+    padding: 0.42rem 0.55rem 0.42rem 0.75rem;
+  }
+  .site-header__links,
+  .site-header__book {
+    display: none;
+  }
+  .site-header__menu-toggle {
+    display: inline-flex;
+  }
+  .salon-brand__descriptor {
+    display: none;
+  }
+}
+@media (max-width: 420px) {
+  .salon-brand__wordmark {
+    font-size: 1.25rem;
+  }
+  .salon-brand__mark {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  .site-header__language {
+    font-size: 0.55rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-header__frame,
+  .site-header__link,
+  .site-header__link::after,
+  .site-header__book,
+  .site-header__mobile-book,
+  .site-header__language button {
+    transition: none;
+  }
+}
+.admin-service-create {
+  grid-template-columns: 1.1fr 1fr 1fr 1.1fr 0.55fr 0.55fr auto;
+}
+.admin-service-row--bilingual {
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+}
+.admin-service-row--bilingual > div {
+  grid-column: 1 / -1;
+}
+html[dir="rtl"] {
+  --font-sans: "Cairo", ui-sans-serif, system-ui, sans-serif;
+}
+html[dir="rtl"] body {
+  font-family: "Cairo", ui-sans-serif, system-ui, sans-serif;
+}
+html[dir="rtl"] .font-serif,
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3 {
+  font-family: "Cairo", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+}
+html[dir="rtl"] .eyebrow {
+  letter-spacing: 0.12em;
+}
+html[dir="rtl"] .cinematic-intro,
+html[dir="rtl"] .cinematic-scene-copy {
+  left: auto;
+  right: clamp(1.5rem, 8vw, 9rem);
+  text-align: right;
+}
+html[dir="rtl"] .cinematic-look-copy {
+  right: auto;
+  left: clamp(1.5rem, 8vw, 9rem);
+  text-align: left;
+}
+html[dir="rtl"] .cinematic-progress {
+  left: auto;
+  right: 2rem;
+}
+html[dir="rtl"] .cinematic-service-link:hover {
+  padding-left: 0;
+  padding-right: 0.5rem;
+}
+html[dir="rtl"] .salon-concierge {
+  right: auto;
+  left: 1.4rem;
+}
+html[dir="rtl"] .concierge-panel {
+  right: auto;
+  left: 0;
+}
+html[dir="rtl"] .admin-sidebar {
+  border-right: 0;
+  border-left: 1px solid rgb(91 36 35 / 0.14);
+}
+html[dir="rtl"] .admin-sidebar > a span {
+  margin-left: 0;
+  margin-right: auto;
+}
+html[dir="rtl"] .admin-specialists b {
+  margin-left: 0;
+  margin-right: auto;
+}
+html[dir="rtl"] .booking-review > div {
+  grid-template-columns: 1fr 7.5rem;
+}
+html[dir="rtl"] .booking-review small {
+  grid-column: 1;
+}
+html[dir="rtl"] .booking-actions,
+html[dir="rtl"] .booking-service-choice,
+html[dir="rtl"] .admin-appointment {
+  direction: rtl;
+}
+@media (max-width: 900px) {
+  .cinematic-journey {
+    height: 940vh;
+  }
+  .admin-service-create {
+    grid-template-columns: 1fr 1fr;
+  }
+  .admin-service-create b,
+  .admin-service-create button {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 640px) {
+  .cinematic-journey {
+    height: 820vh;
+  }
+  html[dir="rtl"] .cinematic-intro,
+  html[dir="rtl"] .cinematic-scene-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    width: auto;
+  }
+  html[dir="rtl"] .cinematic-look-copy {
+    left: 1.35rem;
+    right: 1.35rem;
+    text-align: right;
+  }
+  html[dir="rtl"] .cinematic-progress {
+    left: auto;
+    right: 1.35rem;
+  }
+  html[dir="rtl"] .salon-concierge {
+    left: 1rem;
+    right: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-journey {
+    height: auto !important;
+  }
+  .cinematic-stage {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .cinematic-scene {
+    position: relative;
+    display: block;
+    height: 72svh;
+    clip-path: none !important;
+    filter: none !important;
+  }
+  .scene--street {
+    height: 100svh;
+  }
+  .cinematic-scene .cinematic-image {
+    transform: none !important;
+  }
+  .cinematic-intro {
+    position: absolute;
+    top: 50svh;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-42%) !important;
+  }
+  .cinematic-scene-copy,
+  .cinematic-doorway,
+  .cinematic-arch-mask,
+  .cinematic-reveal-mask,
+  .cinematic-curtain-mask,
+  .cinematic-laser-mask,
+  .cinematic-water-mask,
+  .cinematic-steam,
+  .cinematic-water,
+  .cinematic-progress,
+  .cinematic-loader {
+    display: none !important;
   }
 }

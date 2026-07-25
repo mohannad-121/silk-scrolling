@@ -9,34 +9,32 @@ export type AppointmentStatus =
   | "completed"
   | "cancelled"
   | "no_show";
-
-export type ServiceCategory = {
+export type Bilingual = { nameEn: string; nameAr: string };
+export type ServiceCategory = Bilingual & {
   id: string;
-  name: string;
-  shortName: string;
-  description: string;
+  shortNameEn: string;
+  shortNameAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
 };
-
-export type Specialist = {
+export type Specialist = Bilingual & {
   id: string;
-  name: string;
-  role: string;
+  roleEn: string;
+  roleAr: string;
   initials: string;
   serviceCategories: string[];
 };
-
-export type Service = {
+export type Service = Bilingual & {
   id: string;
   categoryId: string;
-  name: string;
-  description: string;
+  descriptionEn: string;
+  descriptionAr: string;
   duration: number;
   price: number;
   buffer: number;
   enabled: boolean;
   specialistIds: string[];
 };
-
 export type Appointment = {
   id: string;
   bookingReference: string;
@@ -57,7 +55,6 @@ export type Appointment = {
   status: AppointmentStatus;
   createdAt: string;
 };
-
 type SalonState = {
   categories: ServiceCategory[];
   specialists: Specialist[];
@@ -68,338 +65,462 @@ type SalonState = {
 const categories: ServiceCategory[] = [
   {
     id: "nails",
-    name: "Manicure & Nails",
-    shortName: "Nails",
-    description: "Precision manicure, sculpting and modern finishes.",
+    nameEn: "Manicure & Nails",
+    nameAr: "مانيكير وأظافر",
+    shortNameEn: "Nails",
+    shortNameAr: "أظافر",
+    descriptionEn: "Precision manicure, sculpting and modern finishes.",
+    descriptionAr: "مانيكير دقيق ونحت ولمسات عصرية.",
   },
   {
     id: "pedicure",
-    name: "Pedicure",
-    shortName: "Pedicure",
-    description: "Restorative foot rituals in our quiet lounge.",
+    nameEn: "Pedicure",
+    nameAr: "بديكير",
+    shortNameEn: "Pedicure",
+    shortNameAr: "بديكير",
+    descriptionEn: "Restorative foot rituals in our quiet lounge.",
+    descriptionAr: "طقوس قدمين مجددة في صالتنا الهادئة.",
+  },
+  {
+    id: "hair",
+    nameEn: "Hair Styling",
+    nameAr: "\u062a\u0635\u0641\u064a\u0641 \u0627\u0644\u0634\u0639\u0631",
+    shortNameEn: "Hair",
+    shortNameAr: "\u0634\u0639\u0631",
+    descriptionEn: "Polished styling, healthy shine and considered finishing.",
+    descriptionAr:
+      "\u062a\u0635\u0641\u064a\u0641 \u0645\u062a\u0642\u0646 \u0648\u0644\u0645\u0639\u0627\u0646 \u0635\u062d\u064a \u0648\u0644\u0645\u0633\u0629 \u0623\u062e\u064a\u0631\u0629 \u0645\u062f\u0631\u0648\u0633\u0629.",
   },
   {
     id: "laser",
-    name: "Laser Sessions",
-    shortName: "Laser",
-    description: "Private, considered treatments with modern technology.",
+    nameEn: "Laser Sessions",
+    nameAr: "جلسات ليزر",
+    shortNameEn: "Laser",
+    shortNameAr: "ليزر",
+    descriptionEn: "Private, considered treatments with modern technology.",
+    descriptionAr: "جلسات خاصة ومدروسة بتقنية حديثة.",
   },
   {
     id: "spa",
-    name: "Spa & Massage",
-    shortName: "Spa",
-    description: "Slow, sensory rituals for complete restoration.",
+    nameEn: "Spa & Massage",
+    nameAr: "سبا ومساج",
+    shortNameEn: "Spa",
+    shortNameAr: "سبا",
+    descriptionEn: "Slow, sensory rituals for complete restoration.",
+    descriptionAr: "طقوس حسية هادئة لاستعادة العافية.",
   },
   {
     id: "jacuzzi",
-    name: "Jacuzzi",
-    shortName: "Jacuzzi",
-    description: "Private water rituals and unhurried calm.",
+    nameEn: "Jacuzzi",
+    nameAr: "جاكوزي",
+    shortNameEn: "Jacuzzi",
+    shortNameAr: "جاكوزي",
+    descriptionEn: "Private water rituals and unhurried calm.",
+    descriptionAr: "طقوس ماء خاصة وهدوء بلا عجلة.",
   },
   {
     id: "packages",
-    name: "Beauty Packages",
-    shortName: "Packages",
-    description: "Thoughtfully composed full-day experiences.",
+    nameEn: "Beauty Packages",
+    nameAr: "باقات الجمال",
+    shortNameEn: "Packages",
+    shortNameAr: "باقات",
+    descriptionEn: "Thoughtfully composed full-day experiences.",
+    descriptionAr: "تجارب يوم كامل مُنسقة بعناية.",
   },
 ];
 
 const specialists: Specialist[] = [
   {
     id: "layla",
-    name: "Layla Farouk",
-    role: "Master Nail Artist",
+    nameEn: "Layla Farouk",
+    nameAr: "ليلى فاروق",
+    roleEn: "Master Nail Artist",
+    roleAr: "خبيرة أظافر رئيسية",
     initials: "LF",
     serviceCategories: ["nails", "pedicure"],
   },
   {
     id: "sara",
-    name: "Sara Al-Hashimi",
-    role: "Pedicure Specialist",
+    nameEn: "Sara Al-Hashimi",
+    nameAr: "سارة الهاشمي",
+    roleEn: "Pedicure Specialist",
+    roleAr: "أخصائية بديكير",
     initials: "SA",
     serviceCategories: ["pedicure", "spa", "jacuzzi"],
   },
   {
     id: "noura",
-    name: "Noura Khalid",
-    role: "Laser Therapist",
+    nameEn: "Noura Khalid",
+    nameAr: "نورا خالد",
+    roleEn: "Laser Therapist",
+    roleAr: "أخصائية ليزر",
     initials: "NK",
     serviceCategories: ["laser"],
   },
   {
     id: "amelia",
-    name: "Amelia Rossi",
-    role: "Spa Therapist",
+    nameEn: "Amelia Rossi",
+    nameAr: "أميليا روسي",
+    roleEn: "Spa Therapist",
+    roleAr: "أخصائية سبا",
     initials: "AR",
     serviceCategories: ["spa", "jacuzzi", "packages"],
   },
 ];
 
+const service = (
+  id: string,
+  categoryId: string,
+  nameEn: string,
+  nameAr: string,
+  descriptionEn: string,
+  descriptionAr: string,
+  duration: number,
+  price: number,
+  specialistIds: string[],
+  buffer = 10,
+): Service => ({
+  id,
+  categoryId,
+  nameEn,
+  nameAr,
+  descriptionEn,
+  descriptionAr,
+  duration,
+  price,
+  buffer,
+  enabled: true,
+  specialistIds,
+});
 const services: Service[] = [
-  {
-    id: "classic-manicure",
-    categoryId: "nails",
-    name: "Classic Manicure",
-    description: "Care, shape and a high-shine polish finish.",
-    duration: 45,
-    price: 150,
-    buffer: 10,
-    enabled: true,
-    specialistIds: ["layla"],
-  },
-  {
-    id: "gel-manicure",
-    categoryId: "nails",
-    name: "Gel Manicure",
-    description: "Long-wear colour with meticulous cuticle care.",
-    duration: 60,
-    price: 220,
-    buffer: 10,
-    enabled: true,
-    specialistIds: ["layla"],
-  },
-  {
-    id: "russian-manicure",
-    categoryId: "nails",
-    name: "Russian Manicure",
-    description: "A precise dry manicure with a seamless finish.",
-    duration: 75,
-    price: 280,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["layla"],
-  },
-  {
-    id: "builder-gel",
-    categoryId: "nails",
-    name: "Builder Gel",
-    description: "Strength and structure in a refined natural shape.",
-    duration: 90,
-    price: 330,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["layla"],
-  },
-  {
-    id: "acrylic-extensions",
-    categoryId: "nails",
-    name: "Acrylic Extensions",
-    description: "Tailored length, silhouette and a luxury finish.",
-    duration: 120,
-    price: 450,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["layla"],
-  },
-  {
-    id: "french-manicure",
-    categoryId: "nails",
-    name: "French Manicure",
-    description: "An editorial take on an enduring classic.",
-    duration: 70,
-    price: 260,
-    buffer: 10,
-    enabled: true,
-    specialistIds: ["layla"],
-  },
-  {
-    id: "nail-art",
-    categoryId: "nails",
-    name: "Nail Art",
-    description: "A custom, expressive finish created at the atelier.",
-    duration: 90,
-    price: 360,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["layla"],
-  },
-  {
-    id: "nail-repair",
-    categoryId: "nails",
-    name: "Nail Repair",
-    description: "A focused restorative appointment for one or more nails.",
-    duration: 30,
-    price: 90,
-    buffer: 5,
-    enabled: true,
-    specialistIds: ["layla"],
-  },
-  {
-    id: "classic-pedicure",
-    categoryId: "pedicure",
-    name: "Classic Pedicure",
-    description: "An immaculate polish ritual with detailed care.",
-    duration: 60,
-    price: 210,
-    buffer: 10,
-    enabled: true,
-    specialistIds: ["sara"],
-  },
-  {
-    id: "gel-pedicure",
-    categoryId: "pedicure",
-    name: "Gel Pedicure",
-    description: "Long-wear colour and soft, restorative finishing.",
-    duration: 75,
-    price: 270,
-    buffer: 10,
-    enabled: true,
-    specialistIds: ["sara"],
-  },
-  {
-    id: "spa-pedicure",
-    categoryId: "pedicure",
-    name: "Spa Pedicure",
-    description: "Exfoliation, mask and warm water therapy.",
-    duration: 90,
-    price: 340,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["sara"],
-  },
-  {
-    id: "luxury-pedicure",
-    categoryId: "pedicure",
-    name: "Luxury Pedicure",
-    description: "Our most enveloping foot ritual, complete with massage.",
-    duration: 105,
-    price: 420,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["sara"],
-  },
-  {
-    id: "full-body-laser",
-    categoryId: "laser",
-    name: "Full Body Laser",
-    description: "A private full-body consultation and laser session.",
-    duration: 120,
-    price: 1250,
-    buffer: 20,
-    enabled: true,
-    specialistIds: ["noura"],
-  },
-  {
-    id: "full-legs-laser",
-    categoryId: "laser",
-    name: "Full Legs Laser",
-    description: "A tailored full-leg laser session.",
-    duration: 60,
-    price: 520,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["noura"],
-  },
-  {
-    id: "underarms-laser",
-    categoryId: "laser",
-    name: "Underarms Laser",
-    description: "A focused, discreet laser treatment.",
-    duration: 25,
-    price: 160,
-    buffer: 10,
-    enabled: true,
-    specialistIds: ["noura"],
-  },
-  {
-    id: "brazilian-laser",
-    categoryId: "laser",
-    name: "Brazilian Laser",
-    description: "A carefully managed private laser appointment.",
-    duration: 45,
-    price: 390,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["noura"],
-  },
-  {
-    id: "face-laser",
-    categoryId: "laser",
-    name: "Face Laser",
-    description: "A gentle targeted facial laser session.",
-    duration: 30,
-    price: 240,
-    buffer: 10,
-    enabled: true,
-    specialistIds: ["noura"],
-  },
-  {
-    id: "private-jacuzzi",
-    categoryId: "jacuzzi",
-    name: "Private Jacuzzi Session",
-    description: "A private candlelit water ritual in our spa suite.",
-    duration: 60,
-    price: 480,
-    buffer: 20,
-    enabled: true,
-    specialistIds: ["amelia", "sara"],
-  },
-  {
-    id: "relaxation-massage",
-    categoryId: "spa",
-    name: "Relaxation Massage",
-    description: "A slow full-body release with warm aromatic oils.",
-    duration: 60,
-    price: 420,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["amelia"],
-  },
-  {
-    id: "deep-relaxation",
-    categoryId: "spa",
-    name: "Deep Relaxation Massage",
-    description: "A longer restorative ritual for complete release.",
-    duration: 90,
-    price: 590,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["amelia"],
-  },
-  {
-    id: "body-scrub",
-    categoryId: "spa",
-    name: "Body Scrub",
-    description: "A luminous exfoliating ritual with silk-soft finishing.",
-    duration: 45,
-    price: 340,
-    buffer: 10,
-    enabled: true,
-    specialistIds: ["amelia"],
-  },
-  {
-    id: "facial-treatment",
-    categoryId: "spa",
-    name: "Facial Treatment",
-    description: "A tailored facial ritual for clarity and glow.",
-    duration: 60,
-    price: 430,
-    buffer: 15,
-    enabled: true,
-    specialistIds: ["amelia"],
-  },
-  {
-    id: "full-beauty-day",
-    categoryId: "packages",
-    name: "Full Beauty Day",
-    description: "A composed journey across nails, spa and private water ritual.",
-    duration: 240,
-    price: 1500,
-    buffer: 30,
-    enabled: true,
-    specialistIds: ["amelia", "layla"],
-  },
-  {
-    id: "bridal-spa",
-    categoryId: "packages",
-    name: "Bridal Spa Package",
-    description: "A calm, luminous preparation ritual for your day.",
-    duration: 180,
-    price: 1200,
-    buffer: 30,
-    enabled: true,
-    specialistIds: ["amelia"],
-  },
+  service(
+    "classic-manicure",
+    "nails",
+    "Classic Manicure",
+    "مانيكير كلاسيكي",
+    "Care, shape and a high-shine polish finish.",
+    "عناية وتشكيل ولمسة طلاء لامعة.",
+    45,
+    10,
+    ["layla"],
+  ),
+  service(
+    "gel-manicure",
+    "nails",
+    "Gel Manicure",
+    "مانيكير جل",
+    "Long-wear colour with meticulous cuticle care.",
+    "لون ثابت مع عناية دقيقة بالجلد المحيط.",
+    60,
+    18,
+    ["layla"],
+  ),
+  service(
+    "russian-manicure",
+    "nails",
+    "Russian Manicure",
+    "مانيكير روسي",
+    "A precise dry manicure with a seamless finish.",
+    "مانيكير جاف دقيق بلمسة متجانسة.",
+    75,
+    20,
+    ["layla"],
+    15,
+  ),
+  service(
+    "french-manicure",
+    "nails",
+    "French Manicure",
+    "مانيكير فرنسي",
+    "An editorial take on an enduring classic.",
+    "لمسة تحريرية على كلاسيكية خالدة.",
+    70,
+    18,
+    ["layla"],
+  ),
+  service(
+    "builder-gel",
+    "nails",
+    "Builder Gel",
+    "بيلدر جل",
+    "Strength and structure in a refined natural shape.",
+    "قوة وبنية لشكل طبيعي أنيق.",
+    90,
+    25,
+    ["layla"],
+    15,
+  ),
+  service(
+    "acrylic-extensions",
+    "nails",
+    "Acrylic Extensions",
+    "أكريليك",
+    "Tailored length, silhouette and a luxury finish.",
+    "طول وشكل مصممان لك ولمسة فاخرة.",
+    120,
+    30,
+    ["layla"],
+    15,
+  ),
+  service(
+    "nail-art",
+    "nails",
+    "Nail Art",
+    "فن أظافر",
+    "A custom, expressive finish created at the atelier.",
+    "لمسة فنية مخصصة تُصنع في الأتولييه.",
+    90,
+    3,
+    ["layla"],
+    15,
+  ),
+  service(
+    "nail-repair",
+    "nails",
+    "Nail Repair",
+    "إصلاح الظفر",
+    "A focused restorative appointment for one or more nails.",
+    "موعد إصلاحي مركز لظفر واحد أو أكثر.",
+    30,
+    2,
+    ["layla"],
+    5,
+  ),
+  service(
+    "classic-pedicure",
+    "pedicure",
+    "Classic Pedicure",
+    "بديكير كلاسيكي",
+    "An immaculate polish ritual with detailed care.",
+    "طقس طلاء متقن بعناية تفصيلية.",
+    60,
+    15,
+    ["sara"],
+  ),
+  service(
+    "gel-pedicure",
+    "pedicure",
+    "Gel Pedicure",
+    "بديكير جل",
+    "Long-wear colour and soft, restorative finishing.",
+    "لون ثابت ولمسات ناعمة مجددة.",
+    75,
+    22,
+    ["sara"],
+  ),
+  service(
+    "spa-pedicure",
+    "pedicure",
+    "Spa Pedicure",
+    "بديكير سبا",
+    "Exfoliation, mask and warm water therapy.",
+    "تقشير وقناع وعلاج بالماء الدافئ.",
+    90,
+    25,
+    ["sara"],
+    15,
+  ),
+  service(
+    "luxury-pedicure",
+    "pedicure",
+    "Luxury Pedicure",
+    "بديكير فاخر",
+    "Our most enveloping foot ritual, complete with massage.",
+    "أكثر طقوس القدمين دفئاً واكتمالاً مع مساج.",
+    105,
+    30,
+    ["sara"],
+    15,
+  ),
+  service(
+    "full-body-laser",
+    "laser",
+    "Full Body Laser",
+    "ليزر كامل الجسم",
+    "A private full-body consultation and laser session.",
+    "استشارة وجلسة ليزر خاصة لكامل الجسم.",
+    120,
+    80,
+    ["noura"],
+    20,
+  ),
+  service(
+    "full-legs-laser",
+    "laser",
+    "Full Legs Laser",
+    "ليزر كامل الساقين",
+    "A tailored full-leg laser session.",
+    "جلسة ليزر مخصصة لكامل الساقين.",
+    60,
+    45,
+    ["noura"],
+    15,
+  ),
+  service(
+    "underarms-laser",
+    "laser",
+    "Underarms Laser",
+    "ليزر تحت الإبط",
+    "A focused, discreet laser treatment.",
+    "جلسة ليزر مركزة وخصوصية.",
+    25,
+    15,
+    ["noura"],
+  ),
+  service(
+    "brazilian-laser",
+    "laser",
+    "Brazilian Laser",
+    "ليزر برازيلي",
+    "A carefully managed private laser appointment.",
+    "موعد ليزر خاص ومدروس بعناية.",
+    45,
+    30,
+    ["noura"],
+    15,
+  ),
+  service(
+    "face-laser",
+    "laser",
+    "Face Laser",
+    "ليزر الوجه",
+    "A gentle targeted facial laser session.",
+    "جلسة ليزر لطيفة ومركزة للوجه.",
+    30,
+    20,
+    ["noura"],
+  ),
+  service(
+    "wash-blow-dry",
+    "hair",
+    "Wash & Blow-Dry",
+    "\u063a\u0633\u0644 \u0648\u0633\u0634\u0648\u0627\u0631",
+    "A smooth, polished wash and blow-dry with healthy movement.",
+    "\u063a\u0633\u0644 \u0648\u0633\u0634\u0648\u0627\u0631 \u0645\u0635\u0642\u0648\u0644 \u0628\u062d\u0631\u0643\u0629 \u0635\u062d\u064a\u0629.",
+    35,
+    45,
+    ["amelia"],
+    15,
+  ),
+  service(
+    "hair-styling",
+    "hair",
+    "Hair Styling",
+    "\u062a\u0635\u0641\u064a\u0641 \u0627\u0644\u0634\u0639\u0631",
+    "A tailored styling ritual shaped around your finish.",
+    "\u0637\u0642\u0633 \u062a\u0635\u0641\u064a\u0641 \u0645\u062e\u0635\u0635 \u062d\u0633\u0628 \u0625\u0637\u0644\u0627\u0644\u062a\u0643.",
+    50,
+    60,
+    ["amelia"],
+    15,
+  ),
+  service(
+    "hair-colour",
+    "hair",
+    "Hair Colour",
+    "\u0644\u0648\u0646 \u0627\u0644\u0634\u0639\u0631",
+    "Dimensional colour with a soft, radiant finish.",
+    "\u0644\u0648\u0646 \u0628\u0623\u0628\u0639\u0627\u062f \u062f\u0627\u0641\u0626\u0629 \u0648\u0644\u0645\u0639\u0629 \u0645\u0636\u064a\u0626\u0629.",
+    75,
+    90,
+    ["amelia"],
+    20,
+  ),
+  service(
+    "hair-transformation",
+    "hair",
+    "Luxury Hair Transformation",
+    "\u062a\u062d\u0648\u0644 \u0634\u0639\u0631 \u0641\u0627\u062e\u0631",
+    "A complete bespoke transformation with polished finishing.",
+    "\u062a\u062d\u0648\u0644 \u0645\u062e\u0635\u0635 \u0645\u062a\u0643\u0627\u0645\u0644 \u0645\u0639 \u0644\u0645\u0633\u0629 \u0623\u062e\u064a\u0631\u0629 \u0645\u0635\u0642\u0648\u0644\u0629.",
+    120,
+    120,
+    ["amelia"],
+    20,
+  ),
+  service(
+    "private-jacuzzi",
+    "jacuzzi",
+    "Private Jacuzzi Session",
+    "جلسة جاكوزي خاصة",
+    "A private candlelit water ritual in our spa suite.",
+    "طقس ماء خاص على ضوء الشموع في جناح السبا.",
+    60,
+    35,
+    ["amelia", "sara"],
+    20,
+  ),
+  service(
+    "relaxation-massage",
+    "spa",
+    "Relaxation Massage",
+    "مساج استرخاء",
+    "A slow full-body release with warm aromatic oils.",
+    "استرخاء كامل للجسم بزيوت عطرية دافئة.",
+    60,
+    30,
+    ["amelia"],
+    15,
+  ),
+  service(
+    "deep-relaxation",
+    "spa",
+    "Deep Relaxation Massage",
+    "مساج استرخاء عميق",
+    "A longer restorative ritual for complete release.",
+    "طقس أطول لاستعادة العافية بالكامل.",
+    90,
+    40,
+    ["amelia"],
+    15,
+  ),
+  service(
+    "body-scrub",
+    "spa",
+    "Body Scrub",
+    "تقشير الجسم",
+    "A luminous exfoliating ritual with silk-soft finishing.",
+    "طقس تقشير مضيء بلمسة حريرية ناعمة.",
+    45,
+    35,
+    ["amelia"],
+  ),
+  service(
+    "facial-treatment",
+    "spa",
+    "Facial Treatment",
+    "علاج الوجه",
+    "A tailored facial ritual for clarity and glow.",
+    "طقس وجه مخصص للنضارة والإشراق.",
+    60,
+    30,
+    ["amelia"],
+    15,
+  ),
+  service(
+    "full-beauty-day",
+    "packages",
+    "Full Beauty Day",
+    "يوم جمال كامل",
+    "A composed journey across nails, spa and private water ritual.",
+    "رحلة متكاملة بين الأظافر والسبا وطقس الماء الخاص.",
+    240,
+    120,
+    ["amelia", "layla"],
+    30,
+  ),
+  service(
+    "bridal-spa",
+    "packages",
+    "Bridal Spa Package",
+    "باقة سبا العروس",
+    "A calm, luminous preparation ritual for your day.",
+    "طقس هادئ ومضيء للاستعداد ليومك.",
+    180,
+    100,
+    ["amelia"],
+    30,
+  ),
 ];
 
 const initialState: SalonState = { categories, specialists, services, appointments: [] };
@@ -407,11 +528,35 @@ const storageKey = "elan-salon-demo-v1";
 const changeEvent = "elan-salon-data-change";
 let state = initialState;
 let hydrated = false;
+const isBrowser = () => typeof window !== "undefined";
 
-function isBrowser() {
-  return typeof window !== "undefined";
+function migrate<T extends { id: string }>(stored: unknown, seed: T[]) {
+  if (!Array.isArray(stored)) return seed;
+  return seed.map((base) => {
+    const previous = stored.find(
+      (item): item is Record<string, unknown> =>
+        Boolean(item) && typeof item === "object" && (item as { id?: string }).id === base.id,
+    );
+    if (!previous) return base;
+    const legacy = previous as Record<string, unknown>;
+    return {
+      ...base,
+      ...legacy,
+      nameEn:
+        typeof legacy.nameEn === "string"
+          ? legacy.nameEn
+          : typeof legacy.name === "string"
+            ? legacy.name
+            : (base as unknown as Bilingual).nameEn,
+      descriptionEn:
+        typeof legacy.descriptionEn === "string"
+          ? legacy.descriptionEn
+          : typeof legacy.description === "string"
+            ? legacy.description
+            : (base as Record<string, unknown>).descriptionEn,
+    } as T;
+  });
 }
-
 function hydrate() {
   if (!isBrowser() || hydrated) return;
   hydrated = true;
@@ -420,9 +565,9 @@ function hydrate() {
     if (stored) {
       const parsed = JSON.parse(stored) as Partial<SalonState>;
       state = {
-        categories: parsed.categories?.length ? parsed.categories : categories,
-        specialists: parsed.specialists?.length ? parsed.specialists : specialists,
-        services: parsed.services?.length ? parsed.services : services,
+        categories: migrate(parsed.categories, categories),
+        specialists: migrate(parsed.specialists, specialists),
+        services: migrate(parsed.services, services),
         appointments: parsed.appointments ?? [],
       };
     }
@@ -430,19 +575,16 @@ function hydrate() {
     state = initialState;
   }
 }
-
 function broadcast() {
   if (!isBrowser()) return;
   window.localStorage.setItem(storageKey, JSON.stringify(state));
   window.dispatchEvent(new Event(changeEvent));
 }
-
 function update(next: Partial<SalonState>) {
   hydrate();
   state = { ...state, ...next };
   broadcast();
 }
-
 function subscribe(callback: () => void) {
   if (!isBrowser()) return () => undefined;
   window.addEventListener(changeEvent, callback);
@@ -452,59 +594,58 @@ function subscribe(callback: () => void) {
     window.removeEventListener("storage", callback);
   };
 }
-
 function snapshot() {
   hydrate();
   return state;
 }
-
 export function useSalonData() {
   return useSyncExternalStore(subscribe, snapshot, () => initialState);
 }
-
 export function getSalonSnapshot() {
   return snapshot();
 }
-
 export function getService(serviceId?: string) {
-  return snapshot().services.find((service) => service.id === serviceId);
+  return snapshot().services.find((item) => item.id === serviceId);
 }
-
 export function getSpecialistsForService(serviceId?: string) {
-  const service = getService(serviceId);
-  if (!service) return [];
-  return snapshot().specialists.filter((specialist) =>
-    service.specialistIds.includes(specialist.id),
-  );
+  const item = getService(serviceId);
+  return item
+    ? snapshot().specialists.filter((specialist) => item.specialistIds.includes(specialist.id))
+    : [];
 }
-
-export function upsertService(service: Service) {
-  const existing = snapshot().services;
-  const index = existing.findIndex((item) => item.id === service.id);
-  const next = [...existing];
-  if (index === -1) next.push(service);
-  else next[index] = service;
+export function upsertService(item: Service) {
+  const current = snapshot().services;
+  const index = current.findIndex((entry) => entry.id === item.id);
+  const next = [...current];
+  if (index === -1) next.push(item);
+  else next[index] = item;
   update({ services: next });
 }
-
 export function archiveService(serviceId: string) {
-  const service = getService(serviceId);
-  if (service) upsertService({ ...service, enabled: false });
+  const item = getService(serviceId);
+  if (item) upsertService({ ...item, enabled: false });
 }
-
 export function updateAppointmentStatus(id: string, status: AppointmentStatus) {
   update({
-    appointments: snapshot().appointments.map((appointment) =>
-      appointment.id === id ? { ...appointment, status } : appointment,
+    appointments: snapshot().appointments.map((item) =>
+      item.id === id ? { ...item, status } : item,
     ),
   });
 }
-
+export function getJordanToday() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Amman",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const pick = (type: string) => parts.find((part) => part.type === type)?.value ?? "";
+  return `${pick("year")}-${pick("month")}-${pick("day")}`;
+}
 export function getAvailableSlots(date: string, serviceId?: string, specialistId?: string | "any") {
-  const service = getService(serviceId);
-  if (!service || !date) return [];
-  const candidates =
-    specialistId && specialistId !== "any" ? [specialistId] : service.specialistIds;
+  const item = getService(serviceId);
+  if (!item || !date) return [];
+  const candidates = specialistId && specialistId !== "any" ? [specialistId] : item.specialistIds;
   const starts = [
     "10:00",
     "10:30",
@@ -525,7 +666,6 @@ export function getAvailableSlots(date: string, serviceId?: string, specialistId
     "18:30",
     "19:00",
   ];
-  const duration = service.duration + service.buffer;
   const booked = snapshot().appointments.filter(
     (appointment) =>
       appointment.appointmentDate === date &&
@@ -537,39 +677,37 @@ export function getAvailableSlots(date: string, serviceId?: string, specialistId
         !booked.some(
           (appointment) =>
             appointment.specialistId === candidate &&
-            overlaps(start, duration, appointment.startTime, appointment.durationMinutes),
+            overlaps(
+              start,
+              item.duration + item.buffer,
+              appointment.startTime,
+              appointment.durationMinutes,
+            ),
         ),
     ),
   );
 }
-
 function toMinutes(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;
 }
-
 function fromMinutes(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const remainder = minutes % 60;
-  return `${String(hours).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+  return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
 }
-
 function overlaps(startA: string, durationA: number, startB: string, durationB: number) {
   const a = toMinutes(startA);
   const b = toMinutes(startB);
   return a < b + durationB && b < a + durationA;
 }
-
 export type BookingDraft = Omit<
   Appointment,
   "id" | "bookingReference" | "endTime" | "status" | "createdAt"
 >;
-
 export function createAppointment(draft: BookingDraft) {
-  const service = getService(draft.serviceId);
-  if (!service || !service.enabled)
+  const item = getService(draft.serviceId);
+  if (!item || !item.enabled)
     return { ok: false as const, error: "That service is no longer available." };
-  const candidates = draft.specialistId === "any" ? service.specialistIds : [draft.specialistId];
+  const candidates = draft.specialistId === "any" ? item.specialistIds : [draft.specialistId];
   const current = snapshot().appointments;
   const selected = candidates.find(
     (candidate) =>
@@ -580,7 +718,7 @@ export function createAppointment(draft: BookingDraft) {
           !["cancelled", "no_show"].includes(appointment.status) &&
           overlaps(
             draft.startTime,
-            service.duration + service.buffer,
+            item.duration + item.buffer,
             appointment.startTime,
             appointment.durationMinutes,
           ),
@@ -591,22 +729,20 @@ export function createAppointment(draft: BookingDraft) {
       ok: false as const,
       error: "That time has just been taken. Please choose another time.",
     };
-
   const appointment: Appointment = {
     ...draft,
     id: crypto.randomUUID(),
     bookingReference: `ELN-${Math.random().toString(36).slice(2, 7).toUpperCase()}-${String(Date.now()).slice(-4)}`,
     specialistId: selected,
-    endTime: fromMinutes(toMinutes(draft.startTime) + service.duration),
-    durationMinutes: service.duration,
-    totalPrice: service.price,
+    endTime: fromMinutes(toMinutes(draft.startTime) + item.duration),
+    durationMinutes: item.duration,
+    totalPrice: item.price,
     status: "pending",
     createdAt: new Date().toISOString(),
   };
   update({ appointments: [...current, appointment] });
   return { ok: true as const, appointment };
 }
-
 export function resetSalonDemo() {
   state = initialState;
   hydrated = true;

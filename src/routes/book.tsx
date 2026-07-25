@@ -12,10 +12,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-
+import { useI18n } from "@/i18n/salon-i18n";
 import {
   createAppointment,
   getAvailableSlots,
+  getJordanToday,
   getSpecialistsForService,
   type Appointment,
   type BookingDraft,
@@ -25,28 +26,24 @@ import {
 export const Route = createFileRoute("/book")({
   head: () => ({
     meta: [
-      { title: "Book — ÉLAN Nail & Spa" },
-      {
-        name: "description",
-        content: "Reserve an ÉLAN ritual with live demo availability and specialist selection.",
-      },
-      { property: "og:title", content: "Book — ÉLAN Nail & Spa" },
-      { property: "og:description", content: "Reserve your ÉLAN experience." },
+      { title: "Book — ELAN Nail & Spa" },
+      { name: "description", content: "Reserve an ELAN ritual with live availability in Amman." },
     ],
   }),
   component: BookPage,
 });
 
-const steps = ["Category", "Service", "Specialist", "Time", "Details", "Review"];
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("en", { weekday: "short", month: "long", day: "numeric" }).format(
-    new Date(`${date}T12:00:00`),
-  );
-}
-
 function BookPage() {
   const { categories, services, specialists } = useSalonData();
+  const { t, text, formatCurrency, formatDate, language } = useI18n();
+  const stepLabels = [
+    t("booking.category"),
+    t("booking.service"),
+    t("booking.specialist"),
+    t("booking.time"),
+    t("booking.details"),
+    t("booking.review"),
+  ];
   const [step, setStep] = useState(0);
   const [categoryId, setCategoryId] = useState("");
   const [serviceId, setServiceId] = useState("");
@@ -63,53 +60,43 @@ function BookPage() {
   const [inspirationLabel, setInspirationLabel] = useState<string>();
   const [booking, setBooking] = useState<Appointment>();
   const [error, setError] = useState("");
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const requestedService = params.get("service");
-    const requestedLook = params.get("look");
-    const service = services.find((item) => item.id === requestedService && item.enabled);
-    if (service) {
-      setCategoryId(service.categoryId);
-      setServiceId(service.id);
+    const requested = params.get("service");
+    const selected = services.find((item) => item.id === requested && item.enabled);
+    if (selected) {
+      setCategoryId(selected.categoryId);
+      setServiceId(selected.id);
       setStep(1);
     }
-    if (requestedLook)
-      setInspirationLabel(
-        `${requestedLook[0].toUpperCase()}${requestedLook.slice(1)} editorial nail look`,
-      );
-  }, [services]);
-
-  const selectedService = services.find((service) => service.id === serviceId);
-  const selectedCategory = categories.find((category) => category.id === categoryId);
+    if (params.get("look"))
+      setInspirationLabel(language === "ar" ? "إطلالة أظافر ملهمة" : "Editorial nail look");
+  }, [services, language]);
+  const selectedService = services.find((item) => item.id === serviceId);
+  const selectedCategory = categories.find((item) => item.id === categoryId);
+  const selectedSpecialist = specialists.find((item) => item.id === specialistId);
   const eligibleSpecialists = useMemo(() => getSpecialistsForService(serviceId), [serviceId]);
-  const selectedSpecialist = specialists.find((specialist) => specialist.id === specialistId);
   const slots = useMemo(
     () => getAvailableSlots(date, serviceId, specialistId),
     [date, serviceId, specialistId],
   );
-  const today = new Date().toISOString().slice(0, 10);
-
   useEffect(() => {
     if (time && !slots.includes(time)) setTime("");
   }, [slots, time]);
-
-  const selectCategory = (nextCategory: string) => {
-    setCategoryId(nextCategory);
+  const selectCategory = (next: string) => {
+    setCategoryId(next);
     setServiceId("");
     setSpecialistId("any");
     setTime("");
     setStep(1);
   };
-
-  const selectService = (nextService: string) => {
-    setServiceId(nextService);
+  const selectService = (next: string) => {
+    setServiceId(next);
     setSpecialistId("any");
     setTime("");
     setStep(2);
   };
-
-  const uploadInspiration = (file?: File) => {
+  const upload = (file?: File) => {
     if (!file) return;
     setInspirationLabel(file.name);
     const reader = new FileReader();
@@ -117,7 +104,6 @@ function BookPage() {
       setInspirationImageUrl(typeof reader.result === "string" ? reader.result : undefined);
     reader.readAsDataURL(file);
   };
-
   const canContinue = [
     Boolean(categoryId),
     Boolean(serviceId),
@@ -126,14 +112,7 @@ function BookPage() {
     Boolean(name.trim() && phone.trim() && confirmed),
     true,
   ][step];
-
-  const next = () => {
-    if (!canContinue) return;
-    setError("");
-    setStep((current) => Math.min(current + 1, steps.length - 1));
-  };
-
-  const confirmBooking = () => {
+  const confirm = () => {
     if (!selectedService || !date || !time || !name.trim() || !phone.trim()) return;
     const draft: BookingDraft = {
       customerName: name.trim(),
@@ -152,53 +131,50 @@ function BookPage() {
     };
     const result = createAppointment(draft);
     if (!result.ok) {
-      setError(result.error);
+      setError(t("booking.taken"));
       setStep(3);
       return;
     }
     setBooking(result.appointment);
   };
-
   if (booking)
     return (
       <BookingSuccess
         booking={booking}
-        service={selectedService?.name ?? "ÉLAN ritual"}
+        service={selectedService ? text(selectedService, "name") : "ELAN"}
         specialist={
-          specialists.find((item) => item.id === booking.specialistId)?.name ??
-          "Any available specialist"
+          specialists.find((item) => item.id === booking.specialistId)
+            ? text(
+                specialists.find((item) => item.id === booking.specialistId)!,
+                "name",
+              )
+            : t("common.anyAvailable")
         }
       />
     );
-
   return (
-    <div className="booking-page min-h-screen bg-ivory pt-28 pb-24 text-espresso md:pt-36">
+    <div className="booking-page min-h-screen bg-ivory pb-24 pt-28 text-espresso md:pt-36">
       <div className="booking-orbit booking-orbit--one" />
       <div className="booking-orbit booking-orbit--two" />
       <div className="relative mx-auto grid max-w-[1340px] gap-10 px-6 md:px-10 lg:grid-cols-[0.82fr_1.18fr]">
         <aside className="booking-intro lg:sticky lg:top-32 lg:h-fit">
           <Link to="/" className="booking-back">
-            <ChevronLeft size={15} /> Back to the house
+            <ChevronLeft size={15} /> {t("booking.back")}
           </Link>
-          <span className="eyebrow mt-12 block">Private reservation</span>
-          <h1>
-            Book your <em>ÉLAN</em> moment.
-          </h1>
-          <p>Choose a ritual, your preferred artist and a time that belongs only to you.</p>
+          <span className="eyebrow mt-12 block">{t("booking.eyebrow")}</span>
+          <h1>{t("booking.title")}</h1>
+          <p>{t("booking.copy")}</p>
           <div className="booking-support">
             <Phone size={17} />
             <span>
-              Need a hand? <a href="tel:+97140000000">+971 4 000 0000</a>
+              {t("booking.help")} <a href="tel:+962790000000">+962 7 9000 0000</a>
             </span>
           </div>
-          <p className="booking-demo-note">
-            Live local demo · availability and appointments persist in this browser.
-          </p>
+          <p className="booking-demo-note">{t("booking.demo")}</p>
         </aside>
-
         <main className="booking-panel">
           <ol className="booking-steps" aria-label="Booking progress">
-            {steps.map((label, index) => (
+            {stepLabels.map((label, index) => (
               <li
                 key={label}
                 className={index === step ? "is-current" : index < step ? "is-complete" : ""}
@@ -210,59 +186,55 @@ function BookPage() {
               </li>
             ))}
           </ol>
-
           <div className="booking-stage">
             {step === 0 && (
               <section>
-                <StepHeading
-                  number="01"
-                  title="What would you like to explore?"
-                  copy="Begin with a broad ritual. The details can come later."
-                />
+                <StepHeading number="01" title={t("booking.what")} copy={t("booking.whatCopy")} />
                 <div className="booking-category-grid">
-                  {categories.map((category) => (
+                  {categories.map((item) => (
                     <button
-                      key={category.id}
-                      onClick={() => selectCategory(category.id)}
+                      key={item.id}
+                      onClick={() => selectCategory(item.id)}
                       className="booking-category-card"
                     >
                       <Sparkles size={17} />
-                      <span>{category.shortName}</span>
-                      <small>{category.description}</small>
+                      <span>{text(item, "shortName")}</span>
+                      <small>{text(item, "description")}</small>
                       <i>→</i>
                     </button>
                   ))}
                 </div>
               </section>
             )}
-
             {step === 1 && (
               <section>
                 <StepHeading
                   number="02"
                   title={
                     selectedCategory
-                      ? `Choose your ${selectedCategory.shortName.toLowerCase()} ritual.`
-                      : "Choose a service."
+                      ? `${t("booking.chooseService")} — ${text(selectedCategory, "shortName")}`
+                      : t("booking.chooseService")
                   }
-                  copy="Every service includes a dedicated moment of consultation."
+                  copy={t("booking.chooseServiceCopy")}
                 />
                 <div className="booking-service-list">
                   {services
-                    .filter((service) => service.categoryId === categoryId && service.enabled)
-                    .map((service) => (
+                    .filter((item) => item.categoryId === categoryId && item.enabled)
+                    .map((item) => (
                       <button
-                        key={service.id}
-                        onClick={() => selectService(service.id)}
+                        key={item.id}
+                        onClick={() => selectService(item.id)}
                         className="booking-service-choice"
                       >
                         <span>
-                          <b>{service.name}</b>
-                          <small>{service.description}</small>
+                          <b>{text(item, "name")}</b>
+                          <small>{text(item, "description")}</small>
                         </span>
                         <span>
-                          <small>{service.duration} min</small>
-                          <b>AED {service.price}</b>
+                          <small>
+                            {item.duration} {t("common.minutes")}
+                          </small>
+                          <b>{formatCurrency(item.price)}</b>
                         </span>
                         <ChevronRight size={17} />
                       </button>
@@ -270,14 +242,9 @@ function BookPage() {
                 </div>
               </section>
             )}
-
             {step === 2 && selectedService && (
               <section>
-                <StepHeading
-                  number="03"
-                  title="Who would you like to see?"
-                  copy="Choose a specialist or let us find the best available match."
-                />
+                <StepHeading number="03" title={t("booking.who")} copy={t("booking.whoCopy")} />
                 <div className="booking-specialist-grid">
                   <button
                     onClick={() => {
@@ -288,42 +255,41 @@ function BookPage() {
                   >
                     <span className="booking-avatar booking-avatar--any">✦</span>
                     <span>
-                      <b>Any available</b>
-                      <small>We’ll reserve the earliest suitable artist.</small>
+                      <b>{t("common.anyAvailable")}</b>
+                      <small>{t("booking.anyCopy")}</small>
                     </span>
                   </button>
-                  {eligibleSpecialists.map((specialist) => (
+                  {eligibleSpecialists.map((item) => (
                     <button
-                      key={specialist.id}
+                      key={item.id}
                       onClick={() => {
-                        setSpecialistId(specialist.id);
+                        setSpecialistId(item.id);
                         setStep(3);
                       }}
-                      className={`booking-specialist ${specialistId === specialist.id ? "is-selected" : ""}`}
+                      className={`booking-specialist ${specialistId === item.id ? "is-selected" : ""}`}
                     >
-                      <span className="booking-avatar">{specialist.initials}</span>
+                      <span className="booking-avatar">{item.initials}</span>
                       <span>
-                        <b>{specialist.name}</b>
-                        <small>{specialist.role}</small>
+                        <b>{text(item, "name")}</b>
+                        <small>{text(item, "role")}</small>
                       </span>
                     </button>
                   ))}
                 </div>
               </section>
             )}
-
             {step === 3 && selectedService && (
               <section>
                 <StepHeading
                   number="04"
-                  title="Find your unhurried time."
-                  copy={`${selectedService.duration} minutes reserved for ${selectedService.name}.`}
+                  title={t("booking.when")}
+                  copy={`${selectedService.duration} ${t("common.minutes")} · ${text(selectedService, "name")}`}
                 />
                 <label className="booking-field">
-                  <span>Preferred date</span>
+                  <span>{t("booking.date")}</span>
                   <input
                     type="date"
-                    min={today}
+                    min={getJordanToday()}
                     value={date}
                     onChange={(event) => setDate(event.target.value)}
                   />
@@ -334,8 +300,8 @@ function BookPage() {
                       {formatDate(date)}{" "}
                       <span>
                         {specialistId === "any"
-                          ? "· earliest artist"
-                          : `· ${selectedSpecialist?.name}`}
+                          ? `· ${t("common.anyAvailable")}`
+                          : `· ${selectedSpecialist ? text(selectedSpecialist, "name") : ""}`}
                       </span>
                     </p>
                     <div>
@@ -350,56 +316,45 @@ function BookPage() {
                           </button>
                         ))
                       ) : (
-                        <span className="booking-no-slots">
-                          No times remain on this date. Please choose another day.
-                        </span>
+                        <span className="booking-no-slots">{t("booking.noSlots")}</span>
                       )}
                     </div>
                   </div>
                 )}
               </section>
             )}
-
             {step === 4 && (
               <section>
                 <StepHeading
                   number="05"
-                  title="A few details for your reservation."
-                  copy="We only use these details to coordinate your visit."
+                  title={t("booking.detailsTitle")}
+                  copy={t("booking.detailsCopy")}
                 />
                 <div className="booking-fields-grid">
+                  <Field
+                    label={t("booking.name")}
+                    value={name}
+                    onChange={setName}
+                    autoComplete="name"
+                    placeholder={language === "ar" ? "اسمك" : "Your name"}
+                  />
+                  <Field
+                    label={t("booking.phone")}
+                    value={phone}
+                    onChange={setPhone}
+                    autoComplete="tel"
+                    placeholder="+962 …"
+                  />
+                  <Field
+                    label={`${t("booking.email")} (${t("common.optional")})`}
+                    value={email}
+                    onChange={setEmail}
+                    autoComplete="email"
+                    type="email"
+                    placeholder="you@email.com"
+                  />
                   <label className="booking-field">
-                    <span>Full name *</span>
-                    <input
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                      autoComplete="name"
-                      placeholder="Your name"
-                    />
-                  </label>
-                  <label className="booking-field">
-                    <span>Phone number *</span>
-                    <input
-                      value={phone}
-                      onChange={(event) => setPhone(event.target.value)}
-                      autoComplete="tel"
-                      placeholder="+971 …"
-                    />
-                  </label>
-                  <label className="booking-field">
-                    <span>
-                      Email <small>optional</small>
-                    </span>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                      autoComplete="email"
-                      placeholder="you@email.com"
-                    />
-                  </label>
-                  <label className="booking-field">
-                    <span>Preferred contact</span>
+                    <span>{t("booking.contact")}</span>
                     <select
                       value={contactMethod}
                       onChange={(event) =>
@@ -407,32 +362,32 @@ function BookPage() {
                       }
                     >
                       <option value="whatsapp">WhatsApp</option>
-                      <option value="phone">Phone</option>
-                      <option value="email">Email</option>
+                      <option value="phone">{language === "ar" ? "هاتف" : "Phone"}</option>
+                      <option value="email">{language === "ar" ? "بريد إلكتروني" : "Email"}</option>
                     </select>
                   </label>
                 </div>
                 <label className="booking-field mt-5">
                   <span>
-                    Notes <small>optional</small>
+                    {t("booking.notes")} <small>{t("common.optional")}</small>
                   </span>
                   <textarea
                     value={notes}
                     onChange={(event) => setNotes(event.target.value)}
-                    placeholder="Anything your specialist should know?"
+                    placeholder={t("booking.notesPlaceholder")}
                     rows={3}
                   />
                 </label>
                 <label className="booking-upload">
                   <ImagePlus size={18} />
                   <span>
-                    <b>{inspirationLabel ?? "Add an inspiration image"}</b>
-                    <small>Optional · JPG or PNG</small>
+                    <b>{inspirationLabel ?? t("booking.image")}</b>
+                    <small>{t("booking.imageCopy")}</small>
                   </span>
                   <input
                     type="file"
-                    accept="image/png,image/jpeg,image/webp"
-                    onChange={(event) => uploadInspiration(event.target.files?.[0])}
+                    accept="image/jpeg,image/png"
+                    onChange={(event) => upload(event.target.files?.[0])}
                   />
                 </label>
                 <label className="booking-confirm">
@@ -441,77 +396,68 @@ function BookPage() {
                     checked={confirmed}
                     onChange={(event) => setConfirmed(event.target.checked)}
                   />
-                  <span>
-                    I confirm the appointment details and agree to be contacted about this
-                    reservation.
-                  </span>
+                  {t("booking.consent")}
                 </label>
               </section>
             )}
-
             {step === 5 && selectedService && (
               <section>
                 <StepHeading
                   number="06"
-                  title="Your reservation, at a glance."
-                  copy="Please take a moment to review before we hold your time."
+                  title={t("booking.review")}
+                  copy={
+                    language === "ar"
+                      ? "راجعي تفاصيل موعدك قبل تثبيته."
+                      : "Review your appointment before it is held."
+                  }
                 />
                 <div className="booking-review">
-                  <ReviewItem
-                    label="Ritual"
-                    value={selectedService.name}
-                    detail={`${selectedService.duration} min · AED ${selectedService.price}`}
+                  <Review
+                    label={t("booking.service")}
+                    value={text(selectedService, "name")}
+                    detail={`${selectedService.duration} ${t("common.minutes")} · ${formatCurrency(selectedService.price)}`}
                   />
-                  <ReviewItem
-                    label="Specialist"
-                    value={selectedSpecialist?.name ?? "Any available specialist"}
+                  <Review
+                    label={t("booking.specialist")}
+                    value={
+                      selectedSpecialist
+                        ? text(selectedSpecialist, "name")
+                        : t("common.anyAvailable")
+                    }
                     detail={
-                      selectedSpecialist?.role ??
-                      "We’ll match you with the earliest suitable artist."
+                      selectedSpecialist ? text(selectedSpecialist, "role") : t("booking.anyCopy")
                     }
                   />
-                  <ReviewItem
-                    label="When"
-                    value={date ? `${formatDate(date)} · ${time}` : "Not selected"}
-                    detail="The salon will confirm your arrival details."
+                  <Review
+                    label={t("booking.time")}
+                    value={date ? formatDate(date) : ""}
+                    detail={`${time} · ${formatCurrency(selectedService.price)}`}
                   />
-                  <ReviewItem
-                    label="Guest"
-                    value={name}
-                    detail={`${phone}${email ? ` · ${email}` : ""}`}
-                  />
-                  {inspirationLabel && (
-                    <ReviewItem
-                      label="Inspiration"
-                      value={inspirationLabel}
-                      detail="Shared with your specialist."
-                    />
-                  )}
+                  <Review label={t("booking.details")} value={name} detail={phone} />
                 </div>
-                {error && (
-                  <p className="booking-error" role="alert">
-                    {error}
-                  </p>
-                )}
+                {error && <p className="booking-error">{error}</p>}
               </section>
             )}
           </div>
-
           <div className="booking-actions">
             <button
-              onClick={() => setStep((current) => Math.max(0, current - 1))}
-              disabled={step === 0}
               className="booking-previous"
+              onClick={() => setStep((value) => Math.max(0, value - 1))}
+              disabled={step === 0}
             >
-              <ChevronLeft size={17} /> Back
+              <ChevronLeft size={15} /> {t("common.previous")}
             </button>
             {step < 5 ? (
-              <button onClick={next} disabled={!canContinue} className="booking-next">
-                Continue <ChevronRight size={17} />
+              <button
+                className="booking-next"
+                onClick={() => canContinue && setStep((value) => value + 1)}
+                disabled={!canContinue}
+              >
+                {t("common.next")} <ChevronRight size={15} />
               </button>
             ) : (
-              <button onClick={confirmBooking} className="booking-next">
-                Confirm reservation <Check size={17} />
+              <button className="booking-next" onClick={confirm}>
+                {t("booking.confirm")} <Check size={15} />
               </button>
             )}
           </div>
@@ -520,18 +466,42 @@ function BookPage() {
     </div>
   );
 }
-
 function StepHeading({ number, title, copy }: { number: string; title: string; copy: string }) {
   return (
-    <header className="booking-heading">
+    <div className="booking-heading">
       <span>{number}</span>
       <h2>{title}</h2>
       <p>{copy}</p>
-    </header>
+    </div>
   );
 }
-
-function ReviewItem({ label, value, detail }: { label: string; value: string; detail: string }) {
+function Field({
+  label,
+  value,
+  onChange,
+  type = "text",
+  ...props
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+  autoComplete?: string;
+  placeholder?: string;
+}) {
+  return (
+    <label className="booking-field">
+      <span>{label}</span>
+      <input
+        type={type}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        {...props}
+      />
+    </label>
+  );
+}
+function Review({ label, value, detail }: { label: string; value: string; detail: string }) {
   return (
     <div>
       <span>{label}</span>
@@ -540,7 +510,6 @@ function ReviewItem({ label, value, detail }: { label: string; value: string; de
     </div>
   );
 }
-
 function BookingSuccess({
   booking,
   service,
@@ -550,6 +519,7 @@ function BookingSuccess({
   service: string;
   specialist: string;
 }) {
+  const { t, formatDate } = useI18n();
   const [copied, setCopied] = useState(false);
   const addToCalendar = () => {
     const start = `${booking.appointmentDate.replaceAll("-", "")}T${booking.startTime.replace(":", "")}00`;
@@ -561,8 +531,8 @@ function BookingSuccess({
       `UID:${booking.id}`,
       `DTSTART:${start}`,
       `DTEND:${end}`,
-      `SUMMARY:ÉLAN — ${service}`,
-      "LOCATION:ÉLAN Nail & Spa, The Avenue",
+      `SUMMARY:ELAN — ${service}`,
+      "LOCATION:ELAN Nail & Spa, Amman",
       `DESCRIPTION:Booking reference ${booking.bookingReference}`,
       "END:VEVENT",
       "END:VCALENDAR",
@@ -573,35 +543,31 @@ function BookingSuccess({
     link.click();
     URL.revokeObjectURL(link.href);
   };
-  const copyReference = async () => {
+  const copy = async () => {
     await navigator.clipboard.writeText(booking.bookingReference);
     setCopied(true);
   };
-  const whatsapp = `https://wa.me/97140000000?text=${encodeURIComponent(`Hello ÉLAN, I’m confirming my reservation ${booking.bookingReference}.`)}`;
+  const whatsapp = `https://wa.me/962790000000?text=${encodeURIComponent(`Hello ELAN, I’m confirming my reservation ${booking.bookingReference}.`)}`;
   return (
-    <div className="booking-success min-h-screen bg-espresso px-6 pt-32 pb-20 text-ivory md:pt-40">
+    <div className="booking-success min-h-screen bg-espresso px-6 pb-20 pt-32 text-ivory md:pt-40">
       <div className="booking-success-glow" />
       <main className="relative mx-auto max-w-3xl text-center">
         <span className="booking-success-mark">
           <Check size={24} />
         </span>
-        <span className="eyebrow text-champagne">Reservation held</span>
-        <h1>
-          Your ÉLAN moment is <em>waiting.</em>
-        </h1>
-        <p>
-          We’ve held your private appointment. A concierge will confirm the final details via your
-          preferred contact method.
-        </p>
+        <span className="eyebrow text-champagne">{t("booking.held")}</span>
+        <h1>{t("booking.waiting")}</h1>
+        <p>{t("booking.success")}</p>
         <div className="booking-success-card">
-          <span>Booking reference</span>
+          <span>{t("booking.reference")}</span>
           <b>{booking.bookingReference}</b>
-          <button onClick={copyReference}>
-            {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copied" : "Copy"}
+          <button onClick={copy}>
+            {copied ? <Check size={14} /> : <Copy size={14} />}{" "}
+            {copied ? t("booking.copied") : t("booking.copyRef")}
           </button>
           <hr />
           <p>
-            {service} with {specialist}
+            {service} · {specialist}
           </p>
           <p>
             {formatDate(booking.appointmentDate)} · {booking.startTime}–{booking.endTime}
@@ -609,18 +575,15 @@ function BookingSuccess({
         </div>
         <div className="booking-success-actions">
           <button onClick={addToCalendar}>
-            <Download size={16} /> Add to calendar
+            <Download size={16} /> {t("booking.calendar")}
           </button>
           <a href={whatsapp} target="_blank" rel="noreferrer">
-            <MessageCircle size={16} /> WhatsApp us
+            <MessageCircle size={16} /> {t("booking.whatsapp")}
           </a>
         </div>
-        <p className="booking-cancel-note">
-          Need to reschedule? Please contact us at least 12 hours before your appointment with your
-          reference number.
-        </p>
+        <p className="booking-cancel-note">{t("booking.cancel")}</p>
         <Link to="/" className="booking-home-link">
-          Return to the house
+          {t("booking.return")}
         </Link>
       </main>
     </div>
