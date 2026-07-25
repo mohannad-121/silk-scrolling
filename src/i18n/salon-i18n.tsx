@@ -13,6 +13,10 @@ type Dictionary = Record<string, string>;
 
 const translations: Record<Language, Dictionary> = {
   en: {
+    "home.hair": "The styling suite",
+    "home.hairCopy": "A considered finish, shaped with quiet precision.",
+    "home.hairFinish": "The final touch",
+    "home.hairFinishCopy": "Leave with a finish that catches every light.",
     "nav.menu": "Open menu",
     "nav.closeMenu": "Close menu",
     "nav.primary": "Primary navigation",
@@ -185,6 +189,10 @@ const translations: Record<Language, Dictionary> = {
     "stub.specialists.body": "Full team directory with schedules and portfolios is next.",
   },
   ar: {
+    "home.hair": "جناح التصفيف",
+    "home.hairCopy": "لمسة مدروسة تُنجز بدقة وهدوء.",
+    "home.hairFinish": "اللمسة الأخيرة",
+    "home.hairFinishCopy": "إطلالة نهائية تلتقط كل ضوء.",
     "nav.menu": "\u0641\u062a\u062d \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
     "nav.closeMenu": "\u0625\u063a\u0644\u0627\u0642 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
     "nav.primary":

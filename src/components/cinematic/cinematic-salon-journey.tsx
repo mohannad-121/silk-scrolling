@@ -66,12 +66,12 @@ function RoomPortal({ name }: { name: string }) {
   );
 }
 
-function ServiceRail({ categoryIds }: { categoryIds: string[] }) {
+function ServiceRail({ categoryIds, limit = 3 }: { categoryIds: string[]; limit?: number }) {
   const { services } = useSalonData();
   const { formatCurrency, t, text } = useI18n();
   const choices = services
     .filter((service) => service.enabled && categoryIds.includes(service.categoryId))
-    .slice(0, 3);
+    .slice(0, limit);
   return (
     <aside className="cinematic-service-rail" aria-label={t("home.selectRitual")}>
       <span className="cinematic-mini-label">{t("home.selectRitual")}</span>
@@ -135,6 +135,7 @@ export function CinematicSalonJourney() {
         <RoomPortal name="curtain" />
         <RoomPortal name="water" />
         <RoomPortal name="massage" />
+        <RoomPortal name="hair" />
         <div className="cinematic-steam cinematic-steam--spa" aria-hidden="true" />
         <div className="cinematic-water cinematic-water--spa" aria-hidden="true" />
 
@@ -160,15 +161,23 @@ export function CinematicSalonJourney() {
             {t("home.bookLook")} <span>↗</span>
           </a>
         </SceneCopy>
+        <SceneCopy className="cinematic-massage-copy" eyebrow={t("home.massage")}>
+          <p>{t("home.massageCopy")}</p>
+          <ServiceRail categoryIds={["spa"]} />
+        </SceneCopy>
         <SceneCopy className="cinematic-jacuzzi-copy" eyebrow={t("home.final")}>
           <p>{t("home.finalCopy")}</p>
           <ServiceRail categoryIds={["jacuzzi", "spa"]} />
         </SceneCopy>
+        <SceneCopy className="cinematic-hair-copy" eyebrow={t("home.hair")}>
+          <p>{t("home.hairCopy")}</p>
+          <ServiceRail categoryIds={["hair"]} limit={4} />
+        </SceneCopy>
         <div className="cinematic-final-copy cinematic-scene-copy">
-          <span className="eyebrow text-champagne">{t("home.massage")}</span>
+          <span className="eyebrow text-champagne">{t("home.hairFinish")}</span>
           <h2>{t("home.build")}</h2>
-          <p>{t("home.massageCopy")}</p>
-          <a href="/book?service=relaxation-massage" className="cinematic-final-cta">
+          <p>{t("home.hairFinishCopy")}</p>
+          <a href="/book?service=hair-styling" className="cinematic-final-cta">
             {t("home.reserveRitual")} <span>↗</span>
           </a>
         </div>
@@ -178,7 +187,7 @@ export function CinematicSalonJourney() {
           <div className="cinematic-progress-track">
             <i />
           </div>
-          <span>10</span>
+          <span>13</span>
         </div>
         <div id="journey-start" className="cinematic-anchor" />
         {progress < 100 && (
