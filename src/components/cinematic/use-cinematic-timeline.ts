@@ -13,6 +13,23 @@ export function useCinematicTimeline(
     const stage = stageRef.current;
     if (!journey || !stage || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    const isTouchDevice =
+      typeof window !== "undefined" &&
+      (window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768);
+
+    // On touch screens, a tighter scrub of 0.28 feels immediate and connected to the finger.
+    // On desktop, 0.75 delivers silky cinematic inertia.
+    const scrubIntensity = isTouchDevice ? 0.28 : 0.75;
+
+    // Heavy dynamic blur filters during scroll scrubbing cause high GPU fill-rate spikes on mobile.
+    // We preserve them on desktop while optimizing mobile for smooth 60fps scrolling.
+    const blurOutStreet = isTouchDevice ? "none" : "blur(10px)";
+    const blurOutReception = isTouchDevice ? "none" : "blur(8px)";
+    const blurOutManicure = isTouchDevice ? "none" : "blur(10px)";
+    const blurOutLook = isTouchDevice ? "none" : "blur(10px)";
+    const blurOutPedicure = isTouchDevice ? "none" : "blur(10px)";
+    const blurOutLaser = isTouchDevice ? "none" : "blur(12px)";
+
     const context = gsap.context(() => {
       const timeline = gsap.timeline({
         defaults: { ease: "power3.inOut" },
@@ -20,7 +37,7 @@ export function useCinematicTimeline(
           trigger: journey,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.75,
+          scrub: scrubIntensity,
           pin: stage,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -37,7 +54,7 @@ export function useCinematicTimeline(
         .to(".cinematic-door-left", { xPercent: -98, duration: 0.13, ease: "expo.inOut" }, 0.2)
         .to(".cinematic-door-right", { xPercent: 98, duration: 0.13, ease: "expo.inOut" }, 0.2)
         .to(".scene--reception", { opacity: 1, duration: 0.08 }, 0.235)
-        .to(".scene--street", { opacity: 0, filter: "blur(10px)", duration: 0.09 }, 0.27)
+        .to(".scene--street", { opacity: 0, filter: blurOutStreet, duration: 0.09 }, 0.27)
         .to(".scene--reception .cinematic-image", { scale: 1.16, xPercent: 1, duration: 0.2 }, 0.3)
         .fromTo(
           ".cinematic-reception-copy",
@@ -48,7 +65,7 @@ export function useCinematicTimeline(
         .to(".cinematic-reception-copy", { opacity: 0, y: -18, duration: 0.06 }, 0.41)
         .to(".cinematic-arch", { scaleX: 1.15, opacity: 1, duration: 0.08 }, 0.4)
         .to(".scene--manicure", { opacity: 1, duration: 0.07 }, 0.43)
-        .to(".scene--reception", { opacity: 0, filter: "blur(8px)", duration: 0.08 }, 0.46)
+        .to(".scene--reception", { opacity: 0, filter: blurOutReception, duration: 0.08 }, 0.46)
         .to(
           ".scene--manicure .cinematic-image",
           { scale: 1.25, xPercent: -2, duration: 0.17 },
@@ -57,7 +74,7 @@ export function useCinematicTimeline(
         .to(".cinematic-manicure-copy", { opacity: 1, duration: 0.05 }, 0.49)
         .to(".cinematic-manicure-copy", { opacity: 0, duration: 0.05 }, 0.56)
         .to(".scene--look", { opacity: 1, duration: 0.07 }, 0.57)
-        .to(".scene--manicure", { opacity: 0, filter: "blur(10px)", duration: 0.08 }, 0.59)
+        .to(".scene--manicure", { opacity: 0, filter: blurOutManicure, duration: 0.08 }, 0.59)
         .to(
           ".scene--look .cinematic-image",
           { scale: 1.26, xPercent: 2, duration: 0.13, ease: "power2.inOut" },
@@ -67,18 +84,18 @@ export function useCinematicTimeline(
         .to(".cinematic-look-copy", { opacity: 0, duration: 0.05 }, 0.68)
         .to(".cinematic-curtain", { opacity: 1, scaleX: 1, duration: 0.08 }, 0.67)
         .to(".scene--pedicure", { opacity: 1, duration: 0.07 }, 0.68)
-        .to(".scene--look", { opacity: 0, filter: "blur(10px)", duration: 0.08 }, 0.7)
+        .to(".scene--look", { opacity: 0, filter: blurOutLook, duration: 0.08 }, 0.7)
         .to(".scene--pedicure .cinematic-image", { scale: 1.2, yPercent: -2, duration: 0.13 }, 0.7)
         .to(".cinematic-pedicure-copy", { opacity: 1, duration: 0.04 }, 0.72)
         .to(".cinematic-pedicure-copy", { opacity: 0, duration: 0.04 }, 0.77)
         .to(".scene--laser", { opacity: 1, duration: 0.07 }, 0.77)
-        .to(".scene--pedicure", { opacity: 0, filter: "blur(10px)", duration: 0.08 }, 0.79)
+        .to(".scene--pedicure", { opacity: 0, filter: blurOutPedicure, duration: 0.08 }, 0.79)
         .to(".scene--laser .cinematic-image", { scale: 1.15, duration: 0.12 }, 0.79)
         .to(".cinematic-steam", { opacity: 0.8, duration: 0.12 }, 0.82)
         .to(".cinematic-laser-copy", { opacity: 1, duration: 0.04 }, 0.81)
         .to(".cinematic-laser-copy", { opacity: 0, duration: 0.04 }, 0.86)
         .to(".scene--jacuzzi", { opacity: 1, duration: 0.07 }, 0.86)
-        .to(".scene--laser", { opacity: 0, filter: "blur(12px)", duration: 0.08 }, 0.88)
+        .to(".scene--laser", { opacity: 0, filter: blurOutLaser, duration: 0.08 }, 0.88)
         .to(".scene--jacuzzi .cinematic-image", { scale: 1.14, yPercent: -2, duration: 0.14 }, 0.87)
         .to(
           ".cinematic-water",

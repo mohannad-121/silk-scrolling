@@ -145,12 +145,20 @@
     border-color: var(--color-border);
   }
 
+  html {
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   h1,
@@ -196,7 +204,8 @@
 .cinematic-stage {
   --journey-progress: 0;
   position: relative;
-  height: 100svh;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   isolation: isolate;
   background: #130d0c;
@@ -1350,6 +1359,7 @@
 .admin-layout {
   display: grid;
   min-height: calc(100vh - 75px);
+  min-height: calc(100dvh - 75px);
   grid-template-columns: 220px 1fr;
 }
 .admin-sidebar {
@@ -1675,6 +1685,7 @@
 @media (max-width: 900px) {
   .cinematic-journey {
     height: 800vh;
+    height: 800dvh;
   }
   .cinematic-scene-meta {
     right: 1.15rem;
@@ -1701,9 +1712,14 @@
   .admin-sidebar {
     flex-direction: row;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     border-right: 0;
     border-bottom: 1px solid rgb(91 36 35 / 0.14);
     padding: 0.7rem 1rem;
+  }
+  .admin-sidebar::-webkit-scrollbar {
+    display: none;
   }
   .admin-sidebar > a {
     flex: 0 0 auto;
@@ -1720,9 +1736,26 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Prevent iOS Safari from automatically zooming into inputs on focus */
+@media (max-width: 768px) {
+  .booking-field input,
+  .booking-field select,
+  .booking-field textarea,
+  .concierge-panel input,
+  .admin-filters input,
+  .admin-filters select,
+  .admin-service-create input,
+  .admin-service-create select,
+  .admin-service-row input {
+    font-size: 16px !important;
+  }
+}
+
 @media (max-width: 640px) {
   .cinematic-journey {
     height: 720vh;
+    height: 720dvh;
   }
   .cinematic-street-left,
   .cinematic-street-right,
@@ -1731,74 +1764,117 @@
   }
   .cinematic-intro {
     top: 48%;
-    left: 1.35rem;
+    left: clamp(1rem, 5vw, 1.35rem);
+    right: clamp(1rem, 5vw, 1.35rem);
+    width: auto;
+    max-width: calc(100% - 2rem);
     transform: translateY(-50%);
   }
   .cinematic-intro h1 {
-    font-size: clamp(3.3rem, 16vw, 5rem);
+    font-size: clamp(2.35rem, 11vw, 4.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+  .cinematic-intro p {
+    font-size: clamp(0.85rem, 3.5vw, 0.93rem);
+    line-height: 1.6;
+    margin-top: 1.1rem;
   }
   .cinematic-scene-copy {
-    left: 1.35rem;
-    width: calc(100% - 2.7rem);
+    left: clamp(1rem, 5vw, 1.35rem);
+    right: clamp(1rem, 5vw, 1.35rem);
+    width: auto;
+    max-width: calc(100% - 2rem);
   }
   .cinematic-look-copy {
-    left: 1.35rem;
+    left: clamp(1rem, 5vw, 1.35rem);
     right: auto;
     text-align: left;
   }
   .cinematic-scene-copy p {
-    font-size: 2.35rem;
+    font-size: clamp(1.75rem, 7vw, 2.35rem);
+    line-height: 1.05;
   }
   .cinematic-manicure-copy,
   .cinematic-laser-copy {
-    top: 18%;
+    top: clamp(14%, 18vh, 22%);
   }
   .cinematic-pedicure-copy {
-    bottom: 13%;
+    bottom: clamp(10%, 14vh, 18%);
+    top: auto;
+  }
+  .cinematic-final-copy {
+    top: 42%;
+    transform: translateY(-50%);
+  }
+  .cinematic-final-copy h2 {
+    font-size: clamp(2.2rem, 9.5vw, 4.2rem);
+    line-height: 0.95;
   }
   .cinematic-service-rail {
-    margin-top: 1.2rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    max-width: 100%;
   }
   .cinematic-service-link {
-    padding: 0.36rem 0;
+    padding: 0.55rem 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
   .cinematic-progress {
-    left: 1.35rem;
-    bottom: 1.2rem;
+    left: clamp(1rem, 5vw, 1.35rem);
+    bottom: max(1.2rem, calc(env(safe-area-inset-bottom, 0px) + 0.8rem));
   }
   .cinematic-progress > span:first-child {
     display: none;
   }
   .booking-page {
-    padding-top: 6.5rem;
+    padding-top: max(5.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem));
+    padding-bottom: max(3rem, calc(env(safe-area-inset-bottom, 0px) + 2rem));
   }
   .booking-intro h1 {
-    font-size: 3.85rem;
+    font-size: clamp(2.35rem, 9.5vw, 3.85rem);
+    line-height: 0.95;
   }
   .booking-intro > p {
-    margin-top: 1.1rem;
+    margin-top: 0.85rem;
+    font-size: 0.88rem;
   }
   .booking-panel {
     margin-top: 0.7rem;
+    border-radius: 0.5rem;
   }
   .booking-steps {
-    padding: 1rem 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.85rem clamp(0.5rem, 3vw, 1rem);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .booking-steps::-webkit-scrollbar {
+    display: none;
   }
   .booking-steps li {
+    flex: 1 1 auto;
     justify-content: center;
   }
   .booking-steps li small {
     display: none;
   }
   .booking-steps li:not(:last-child)::after {
-    left: 1.9rem;
+    left: calc(50% + 14px);
+    right: calc(-50% + 14px);
+    width: auto;
   }
   .booking-stage {
-    min-height: 470px;
-    padding: 1.5rem;
+    min-height: 420px;
+    padding: clamp(1rem, 4vw, 1.5rem);
   }
   .booking-heading h2 {
-    font-size: 2.8rem;
+    font-size: clamp(1.75rem, 6.5vw, 2.8rem);
+    line-height: 1;
   }
   .booking-category-grid,
   .booking-specialist-grid,
@@ -1807,12 +1883,14 @@
   }
   .booking-category-card {
     min-height: 105px;
+    padding: 1.15rem;
   }
   .booking-category-card > span {
     margin-top: 0.8rem;
   }
   .booking-service-choice {
     grid-template-columns: 1fr auto;
+    min-height: 60px;
   }
   .booking-service-choice > span:nth-child(2) {
     grid-column: 1;
@@ -1825,6 +1903,15 @@
     grid-column: 2;
     grid-row: 1 / span 2;
   }
+  .booking-times button {
+    min-height: 44px;
+    min-width: 4.4rem;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
   .booking-review > div {
     grid-template-columns: 1fr;
     gap: 0.35rem;
@@ -1833,17 +1920,30 @@
     grid-column: 1;
   }
   .booking-panel .booking-actions {
-    padding: 1rem 1.5rem;
+    padding: 1rem clamp(1rem, 4vw, 1.5rem);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .booking-previous,
+  .booking-next {
+    min-height: 44px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.68rem;
   }
   .salon-concierge {
-    right: 1rem;
-    bottom: 4.9rem;
+    right: max(0.85rem, env(safe-area-inset-right, 0px));
+    bottom: max(4.9rem, calc(env(safe-area-inset-bottom, 0px) + 4.9rem));
   }
   .concierge-toggle {
+    min-height: 44px;
     box-shadow: 0 8px 30px rgb(62 14 15 / 0.3);
   }
+  .concierge-panel {
+    max-height: min(440px, calc(100dvh - 120px));
+    bottom: 3.8rem;
+  }
   .admin-header {
-    padding: 1rem;
+    padding: max(1rem, env(safe-area-inset-top, 0px)) 1rem 1rem;
   }
   .admin-header > div > span:first-child {
     display: none;
@@ -1852,10 +1952,12 @@
     padding: 2rem 1rem 5rem;
   }
   .admin-main h1 {
-    font-size: 3.5rem;
+    font-size: clamp(2.4rem, 8vw, 3.5rem);
+    line-height: 0.95;
   }
   .admin-metrics {
     grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
   }
   .admin-appointment {
     grid-template-columns: 70px 1fr;
@@ -1892,6 +1994,41 @@
   }
   .admin-specialists b {
     display: none;
+  }
+}
+
+/* Extra-narrow devices: 320px - 360px */
+@media (max-width: 360px) {
+  .cinematic-intro h1 {
+    font-size: 2.15rem;
+  }
+  .cinematic-scene-copy p {
+    font-size: 1.6rem;
+  }
+  .cinematic-service-link {
+    font-size: 0.7rem;
+    gap: 0.75rem;
+  }
+  .booking-intro h1 {
+    font-size: 2.15rem;
+  }
+  .booking-heading h2 {
+    font-size: 1.6rem;
+  }
+  .booking-stage {
+    padding: 0.85rem;
+  }
+  .booking-panel .booking-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .booking-previous,
+  .booking-next {
+    width: 100%;
+    justify-content: center;
+  }
+  .admin-metrics {
+    grid-template-columns: 1fr;
   }
 }
 @media (prefers-reduced-motion: reduce) {

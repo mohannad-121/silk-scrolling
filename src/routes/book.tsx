@@ -172,15 +172,15 @@ function BookPage() {
     );
 
   return (
-    <div className="booking-page min-h-screen bg-ivory pt-28 pb-24 text-espresso md:pt-36">
+    <div className="booking-page min-h-screen bg-ivory pt-24 sm:pt-28 pb-24 text-espresso md:pt-36">
       <div className="booking-orbit booking-orbit--one" />
       <div className="booking-orbit booking-orbit--two" />
-      <div className="relative mx-auto grid max-w-[1340px] gap-10 px-6 md:px-10 lg:grid-cols-[0.82fr_1.18fr]">
+      <div className="relative mx-auto grid max-w-[1340px] gap-8 lg:gap-10 px-4 sm:px-6 md:px-10 lg:grid-cols-[0.82fr_1.18fr]">
         <aside className="booking-intro lg:sticky lg:top-32 lg:h-fit">
-          <Link to="/" className="booking-back">
+          <Link to="/" className="booking-back min-h-[44px]">
             <ChevronLeft size={15} /> Back to the house
           </Link>
-          <span className="eyebrow mt-12 block">Private reservation</span>
+          <span className="eyebrow mt-8 sm:mt-12 block">Private reservation</span>
           <h1>
             Book your <em>ÉLAN</em> moment.
           </h1>
@@ -579,7 +579,7 @@ function BookingSuccess({
   };
   const whatsapp = `https://wa.me/97140000000?text=${encodeURIComponent(`Hello ÉLAN, I’m confirming my reservation ${booking.bookingReference}.`)}`;
   return (
-    <div className="booking-success min-h-screen bg-espresso px-6 pt-32 pb-20 text-ivory md:pt-40">
+    <div className="booking-success min-h-screen bg-espresso px-4 sm:px-6 pt-[max(7rem,calc(env(safe-area-inset-top,0px)+5rem))] pb-20 text-ivory md:pt-40">
       <div className="booking-success-glow" />
       <main className="relative mx-auto max-w-3xl text-center">
         <span className="booking-success-mark">
@@ -596,7 +596,7 @@ function BookingSuccess({
         <div className="booking-success-card">
           <span>Booking reference</span>
           <b>{booking.bookingReference}</b>
-          <button onClick={copyReference}>
+          <button onClick={copyReference} className="min-h-[36px] inline-flex items-center gap-1">
             {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copied" : "Copy"}
           </button>
           <hr />
@@ -608,10 +608,10 @@ function BookingSuccess({
           </p>
         </div>
         <div className="booking-success-actions">
-          <button onClick={addToCalendar}>
+          <button onClick={addToCalendar} className="min-h-[44px]">
             <Download size={16} /> Add to calendar
           </button>
-          <a href={whatsapp} target="_blank" rel="noreferrer">
+          <a href={whatsapp} target="_blank" rel="noreferrer" className="min-h-[44px]">
             <MessageCircle size={16} /> WhatsApp us
           </a>
         </div>
@@ -619,7 +619,10 @@ function BookingSuccess({
           Need to reschedule? Please contact us at least 12 hours before your appointment with your
           reference number.
         </p>
-        <Link to="/" className="booking-home-link">
+        <Link
+          to="/"
+          className="booking-home-link min-h-[44px] inline-flex items-center justify-center"
+        >
           Return to the house
         </Link>
       </main>

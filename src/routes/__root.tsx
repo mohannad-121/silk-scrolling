@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { SalonConcierge } from "@/components/salon-concierge";
+import { Menu, X, ChevronRight, Phone, MapPin } from "lucide-react";
 
 function NotFoundComponent() {
   return (
@@ -145,16 +146,44 @@ function RootComponent() {
 
 function SiteChrome() {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = useRouterState({
     select: (s: { location: { pathname: string } }) => s.location.pathname,
   });
   const isHome = pathname === "/";
+  const isBook = pathname === "/book";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close mobile navigation drawer on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  // Close menu on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const nav = [
@@ -171,12 +200,14 @@ function SiteChrome() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-          solid ? "bg-background/85 backdrop-blur-xl border-b border-border/60" : "bg-transparent"
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 pt-[env(safe-area-inset-top,0px)] ${
+          solid || mobileMenuOpen
+            ? "bg-background/90 backdrop-blur-xl border-b border-border/60 shadow-xs"
+            : "bg-transparent"
         }`}
       >
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-10 md:py-5">
-          <Link to="/" className="group flex items-baseline gap-2">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-3.5 sm:px-6 sm:py-4 md:px-10 md:py-5">
+          <Link to="/" className="group flex items-baseline gap-2 py-1">
             <span
               className={`font-serif text-2xl tracking-[0.25em] transition-colors ${
                 solid ? "text-foreground" : "text-white"
@@ -193,6 +224,7 @@ function SiteChrome() {
             </span>
           </Link>
 
+          {/* Desktop Navigation - preserved exactly */}
           <nav className="hidden items-center gap-8 lg:flex">
             {nav.map((item) => (
               <Link
@@ -207,7 +239,7 @@ function SiteChrome() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <span
               className={`hidden text-[10px] uppercase tracking-[0.3em] sm:inline ${
                 solid ? "text-muted-foreground" : "text-white/70"
@@ -217,7 +249,7 @@ function SiteChrome() {
             </span>
             <Link
               to="/book"
-              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-[11px] uppercase tracking-[0.28em] transition-all ${
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 sm:px-5 sm:py-2.5 text-[10px] sm:text-[11px] uppercase tracking-[0.28em] transition-all min-h-[44px] ${
                 solid
                   ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
                   : "border-white/70 text-white hover:bg-white hover:text-primary"
@@ -225,9 +257,78 @@ function SiteChrome() {
             >
               Book Now
             </Link>
+
+            {/* Mobile Navigation Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation"
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              className={`inline-flex lg:hidden items-center justify-center p-2.5 rounded-full border min-w-[44px] min-h-[44px] transition-colors ${
+                solid
+                  ? "border-border/80 text-foreground hover:bg-muted"
+                  : "border-white/40 text-white hover:bg-white/10"
+              }`}
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Mobile Navigation Overlay / Drawer */}
+      {mobileMenuOpen && (
+        <div
+          id="mobile-navigation"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site navigation"
+          className="fixed inset-0 z-40 flex flex-col justify-between bg-espresso/98 backdrop-blur-2xl text-ivory lg:hidden pt-[calc(5rem+env(safe-area-inset-top,0px))] pb-[max(1.5rem,calc(env(safe-area-inset-bottom,0px)+1rem))] px-6 overflow-y-auto animate-in fade-in duration-300"
+        >
+          <div className="space-y-6">
+            <div className="border-b border-ivory/15 pb-3">
+              <span className="eyebrow text-champagne/80">Navigation</span>
+            </div>
+            <nav className="flex flex-col divide-y divide-ivory/10">
+              {nav.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between py-4 text-2xl sm:text-3xl font-serif tracking-[0.05em] text-ivory/90 hover:text-champagne transition-colors"
+                >
+                  <span>{item.label}</span>
+                  <ChevronRight size={18} className="text-champagne/70" />
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="mt-8 space-y-6 border-t border-ivory/15 pt-6">
+            <Link
+              to="/book"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex w-full items-center justify-center rounded-full bg-champagne py-3.5 px-6 text-xs font-medium uppercase tracking-[0.25em] text-espresso shadow-lg transition-transform active:scale-[0.98]"
+            >
+              Reserve an Appointment
+            </Link>
+            <div className="space-y-3 text-xs text-ivory/70">
+              <a
+                href="tel:+97140000000"
+                className="flex min-h-[44px] items-center gap-2.5 text-ivory/80 hover:text-champagne transition-colors"
+              >
+                <Phone size={16} className="text-champagne shrink-0" />
+                <span className="text-sm font-medium tracking-wide">+971 4 000 0000</span>
+              </a>
+              <div className="flex min-h-[44px] items-center gap-2.5">
+                <MapPin size={16} className="text-champagne shrink-0" />
+                <span className="leading-snug">The Avenue, 12 Rose Court · Downtown</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main>
         <Outlet />
@@ -235,13 +336,15 @@ function SiteChrome() {
 
       {!isHome && <SiteFooter />}
 
-      {/* Persistent mobile CTA */}
-      <Link
-        to="/book"
-        className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 rounded-full bg-primary px-8 py-3 text-[11px] uppercase tracking-[0.32em] text-primary-foreground shadow-2xl shadow-primary/30 lg:hidden"
-      >
-        Reserve
-      </Link>
+      {/* Persistent mobile CTA - excluded on booking page to prevent blocking form controls */}
+      {!isBook && !mobileMenuOpen && (
+        <Link
+          to="/book"
+          className="fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom,0px)+0.75rem))] left-1/2 z-40 -translate-x-1/2 rounded-full bg-primary px-8 py-3 text-[11px] uppercase tracking-[0.32em] text-primary-foreground shadow-2xl shadow-primary/30 min-h-[44px] flex items-center justify-center transition-transform active:scale-95 lg:hidden"
+        >
+          Reserve
+        </Link>
+      )}
     </>
   );
 }

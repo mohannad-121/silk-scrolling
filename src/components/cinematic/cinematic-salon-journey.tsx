@@ -9,6 +9,8 @@ import {
 } from "./cinematic-scene-config";
 import { useCinematicTimeline } from "./use-cinematic-timeline";
 
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 function useCinematicLoader() {
   const [progress, setProgress] = useState(0);
 
@@ -18,7 +20,13 @@ function useCinematicLoader() {
     const assets = firstCinematicAssets;
     const complete = () => {
       loaded += 1;
-      if (mounted) setProgress(Math.round((loaded / assets.length) * 100));
+      if (mounted) {
+        const currentProgress = Math.round((loaded / assets.length) * 100);
+        setProgress(currentProgress);
+        if (currentProgress === 100) {
+          ScrollTrigger.refresh();
+        }
+      }
     };
     assets.forEach((source) => {
       const image = new Image();
